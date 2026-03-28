@@ -18,6 +18,36 @@ You have access to interpersonal communication skills. These help you navigate w
 | `supernemawashi:profile-freshness` | User wants to check which profiles are stale or need re-analysis |
 | `supernemawashi:reply-strategist` | User needs help replying to someone or deciding what to say |
 
+## Skill Routing
+
+When the request is ambiguous, use this decision tree:
+
+```
+"update/collect profile for X" (specific person)
+  → profile-collector
+
+"analyze X" / "what kind of person is X?"
+  → profile-analyzer
+
+"update all profiles" / "batch update"
+  → profile-batch
+
+"check profiles" / "which are stale?" / "who needs re-analysis?"
+  → profile-freshness
+  → then profile-batch (if user wants to act on results)
+
+"discover people" / "who am I missing?"
+  → profile-discovery
+
+"how should I reply to X?" / "what should I say?"
+  → reply-strategist
+```
+
+**Key disambiguations:**
+- Specific person → `profile-collector` or `profile-analyzer`. Multiple/all people → `profile-batch`.
+- "Check" or "status" → `profile-freshness` (read-only). "Update" or "re-analyze" → `profile-batch` (takes action).
+- `profile-freshness` is often a precursor to `profile-batch` — suggest the next step after showing results.
+
 ## The Rule
 
 **Invoke relevant skills BEFORE any response or action.** If a user mentions replying to someone, preparing for a meeting, or dealing with a person — check for applicable skills.

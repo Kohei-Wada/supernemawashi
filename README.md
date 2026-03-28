@@ -13,7 +13,8 @@ A Claude Code plugin that helps you navigate workplace dynamics by building prof
 ## Install
 
 ```bash
-claude plugins add /path/to/supernemawashi
+claude plugins marketplace add /path/to/supernemawashi
+claude plugins install supernemawashi
 ```
 
 ## Usage

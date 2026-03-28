@@ -21,6 +21,7 @@ supernemawashi is an interpersonal communication strategy toolkit for engineers,
 | profile-collector | Collects data from MCP sources, creates/updates profiles |
 | profile-analyzer | Classifies behavioral patterns using psychological frameworks (defense mechanisms, TKI, TA, motivators, cognitive biases, attachment) and generates situation-indexed DO/DON'T rules |
 | profile-discovery | Scans Slack channels and Gmail for people the user interacts with but hasn't profiled yet |
+| profile-freshness | Checks analysis staleness across all profiles and triages which need re-analysis |
 | reply-strategist | Crafts profile-aware reply strategies and message drafts, maps user context to situation categories |
 
 ## Key Conventions

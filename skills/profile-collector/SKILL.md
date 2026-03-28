@@ -95,11 +95,34 @@ last_updated: [YYYY-MM-DD]
 <!-- Populated after profile-analyzer runs -->
 ```
 
-**facts.md** — Record notable statements found during collection:
+**facts.md** — Record notable statements and observations. Use the standard entry format:
 
 ```
-## [Date]
-- [source] [Notable statement or action]
+---
+person: [Full Name]
+last_updated: [YYYY-MM-DD]
+---
+
+# Facts: [Full Name]
+
+## YYYY-MM
+
+- [YYYY-MM-DD] [source] Description text (url)
+- [YYYY-MM-DD] [source] Description text (url)
+```
+
+**Entry format rules:**
+- Each entry is a single line starting with `- [YYYY-MM-DD] [source]`
+- `source` is one of: `slack`, `gmail`, `calendar`, `github`, `manual`
+- URL is optional, appended in parentheses at the end
+- Group entries under `## YYYY-MM` month headers
+- One fact per line — no multi-line entries or continuation lines
+
+**Examples:**
+```
+- [2026-03-27] [slack] Rear-guard criticism to subordinate about alert handling (https://slack.com/archives/C123/p456)
+- [2026-03-27] [gmail] Accepted meeting invitation for EoL review as passive participant
+- [2026-03-26] [calendar] Attended ops meeting organized by team lead
 ```
 
 ### Step 5: Suggest Next Steps

@@ -19,7 +19,7 @@ Check analysis staleness across all profiles and triage which ones need re-analy
 
 1. List all directories in `~/.local/share/supernemawashi/profiles/`
 2. For each profile directory, read `profile.md` and extract the `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` HTML comment
-3. Read `facts.md` and count the actual number of dated entries (lines starting with `- [`)
+3. Read `facts.md` and count the actual number of fact entries (lines matching the pattern `- [YYYY-MM-DD] [source]`)
 4. Record: profile name, last analyzed date, analyzed facts count, current facts count
 
 If a profile has no `<!-- analyzed: -->` comment, mark it as "Never Analyzed."

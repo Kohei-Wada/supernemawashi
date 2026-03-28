@@ -30,11 +30,13 @@ Read the following files for the target person:
 
 For each entry in facts.md, extract **behavioral signals** — not "what happened" but "what this reveals about the person psychologically." Tag each signal with relevant framework dimensions from the Framework Reference appendix.
 
+Facts entries follow the standard format: `- [YYYY-MM-DD] [source] Description text (url)`. Parse each line matching this pattern as one fact entry.
+
 **Example:**
 
 ```
 facts.md entry:
-"Rear-guard criticism to Alice: 'Doesn't the alert being triggered == response needed?'"
+- [2026-03-27] [slack] Rear-guard criticism to Alice: 'Doesn't the alert being triggered == response needed?' (https://slack.com/archives/C123/p456)
 
 Signals:
 - Withholds information until subordinate acts, then criticizes [defense: info-withholding]

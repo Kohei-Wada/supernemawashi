@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-supernemawashi is an interpersonal communication strategy toolkit for engineers, implemented as a Claude Code skill library (plugin). It helps users navigate workplace dynamics by collecting and analyzing profiles of colleagues, crafting strategic replies, and preparing for meetings.
+supernemawashi is an interpersonal communication strategy toolkit for engineers, implemented as a Claude Code skill library (plugin). It helps users navigate workplace dynamics by collecting and analyzing psychological profiles of colleagues, crafting strategic replies, and preparing for meetings.
 
 ## Architecture
 
@@ -19,8 +19,8 @@ supernemawashi is an interpersonal communication strategy toolkit for engineers,
 |-------|---------|
 | using-supernemawashi | Entry point — routes requests to appropriate skills |
 | profile-collector | Collects data from MCP sources, creates/updates profiles |
-| profile-analyzer | Analyzes behavioral patterns from collected data |
-| reply-strategist | Crafts profile-aware reply strategies and message drafts |
+| profile-analyzer | Classifies behavioral patterns using psychological frameworks (defense mechanisms, TKI, TA, motivators, cognitive biases, attachment) and generates situation-indexed DO/DON'T rules |
+| reply-strategist | Crafts profile-aware reply strategies and message drafts, maps user context to situation categories |
 
 ## Key Conventions
 
@@ -28,3 +28,4 @@ supernemawashi is an interpersonal communication strategy toolkit for engineers,
 - Profile data is NEVER committed to git — it lives in `~/.supernemawashi/`
 - Skills use MCP tools (Slack, Gmail, Calendar, GitHub) but never send messages without explicit user confirmation
 - Design specs go in `docs/supernemawashi/specs/`, plans in `docs/supernemawashi/plans/`
+- All documentation and skill files are written in English

@@ -40,8 +40,16 @@ Read the recipient's profile from `~/.supernemawashi/profiles/<person-name>/`:
 
 ### Step 3: Analyze the Situation
 
-Based on profile data, assess:
-- **Recipient's likely reaction** — Given their behavioral patterns, how will they probably respond to this topic?
+**Map to situation category.** Determine which situation category from the profile's Communication Strategy section applies:
+- **When Requesting** — you need something from them
+- **During Conflict** — disagreement or tension
+- **When Reporting** — delivering news (good or bad)
+- **Routine Collaboration** — day-to-day interaction
+
+Read the DO/DON'T rules for that situation category. These rules are backed by psychological framework analysis (defense mechanisms, conflict modes, ego states, motivators, cognitive biases) — use the framework tags to explain your reasoning to the user.
+
+Based on profile data, also assess:
+- **Recipient's likely reaction** — Given their behavioral patterns and framework classifications, how will they probably respond to this topic?
 - **Timing** — Is now a good time based on their patterns? (e.g., avoid mornings if they're irritable early)
 - **Channel fit** — Is the chosen channel optimal for this person and topic?
 - **Political context** — Should anyone else be consulted or CC'd first?

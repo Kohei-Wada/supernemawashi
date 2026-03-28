@@ -1,10 +1,11 @@
 {
   "name": "supernemawashi",
-  "description": "Interpersonal communication strategy toolkit: profile collection, behavioral analysis, and reply strategies",
-  "version": "1.0.0",
+  "description": "Interpersonal communication strategy toolkit: psychological profiling, behavioral analysis, and evidence-based communication rules",
+  "version": "1.1.0",
   "author": {
     "name": "Kohei Wada"
   },
+  "homepage": "https://github.com/Kohei-Wada/supernemawashi",
   "repository": "https://github.com/Kohei-Wada/supernemawashi",
   "license": "MIT",
   "keywords": [
@@ -12,6 +13,7 @@
     "communication",
     "profiles",
     "interpersonal",
-    "strategy"
+    "strategy",
+    "psychology"
   ]
 }

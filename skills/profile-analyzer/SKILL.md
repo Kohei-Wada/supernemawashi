@@ -34,7 +34,7 @@ For each entry in facts.md, extract **behavioral signals** — not "what happene
 
 ```
 facts.md entry:
-"Rear-guard criticism to Wada: 'Doesn't the alert being triggered == response needed?'"
+"Rear-guard criticism to Alice: 'Doesn't the alert being triggered == response needed?'"
 
 Signals:
 - Withholds information until subordinate acts, then criticizes [defense: info-withholding]

@@ -20,6 +20,7 @@ supernemawashi is an interpersonal communication strategy toolkit for engineers,
 | using-supernemawashi | Entry point — routes requests to appropriate skills |
 | profile-collector | Collects data from MCP sources, creates/updates profiles |
 | profile-analyzer | Classifies behavioral patterns using psychological frameworks (defense mechanisms, TKI, TA, motivators, cognitive biases, attachment) and generates situation-indexed DO/DON'T rules |
+| profile-discovery | Scans Slack channels and Gmail for people the user interacts with but hasn't profiled yet |
 | reply-strategist | Crafts profile-aware reply strategies and message drafts, maps user context to situation categories |
 
 ## Key Conventions
@@ -29,3 +30,4 @@ supernemawashi is an interpersonal communication strategy toolkit for engineers,
 - Skills use MCP tools (Slack, Gmail, Calendar, GitHub) but never send messages without explicit user confirmation
 - Design specs go in `docs/supernemawashi/specs/`, plans in `docs/supernemawashi/plans/`
 - All documentation and skill files are written in English
+- Use fictional names (e.g., "John", "Alice") in README and public-facing examples — never use real people's names

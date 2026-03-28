@@ -51,7 +51,7 @@ For each facts.md entry, extract behavioral signals — not "what happened" but 
 **Example:**
 ```
 facts.md entry:
-"Rear-guard criticism to Wada: 'Doesn't the alert being triggered == response needed?'"
+"Rear-guard criticism to Alice: 'Doesn't the alert being triggered == response needed?'"
 
 Signals:
 - Withholds information until subordinate acts, then criticizes [defense: info-withholding]
@@ -232,6 +232,6 @@ reply-strategist currently reads "Behavioral Patterns" and "Communication Strate
 
 ## Verification
 
-1. Run the updated profile-analyzer on alice (richest dataset) — output should be comparable quality to the existing hand-written analysis
-2. Run on fukuhara or arao (sparse dataset) — should produce hypothesis-tagged classifications and clear data gaps
+1. Run the updated profile-analyzer on john (richest dataset) — output should be comparable quality to the existing hand-written analysis
+2. Run on bob or carol (sparse dataset) — should produce hypothesis-tagged classifications and clear data gaps
 3. Use reply-strategist with an analyzed profile — confirm it correctly reads and applies DO/DON'T rules from the new format

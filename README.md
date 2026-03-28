@@ -30,10 +30,10 @@ After installing, start a new Claude Code session. You should see the supernemaw
 
 ## The Basic Workflow
 
-1. **Create a profile** — "Create a profile for Alice"
+1. **Create a profile** — "Create a profile for John"
 2. **Review collected data** — Claude gathers facts from your Slack, Gmail, and Calendar
-3. **Analyze** — "Analyze Alice" — generates psychological profile with communication rules
-4. **Use it** — "How should I reply to Alice about the deadline?" — gets profile-informed draft messages
+3. **Analyze** — "Analyze John" — generates psychological profile with communication rules
+4. **Use it** — "How should I reply to John about the deadline?" — gets profile-informed draft messages
 
 ## What's Inside
 
@@ -43,6 +43,7 @@ After installing, start a new Claude Code session. You should see the supernemaw
 |-------|-------------|
 | `profile-collector` | Gathers data from MCP sources (Slack, Gmail, Calendar, GitHub) and writes structured profiles |
 | `profile-analyzer` | Classifies behavioral patterns using 6 psychological frameworks and generates situation-indexed DO/DON'T rules |
+| `profile-discovery` | Scans Slack and Gmail to find people you interact with but haven't profiled yet |
 | `reply-strategist` | Crafts 2-3 draft messages tailored to the recipient's psychological profile |
 | `using-supernemawashi` | Entry point — routes requests to the appropriate skill |
 

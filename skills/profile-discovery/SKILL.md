@@ -7,6 +7,10 @@ description: Use when user wants to find people they interact with but haven't p
 
 Scan communication sources to identify people the user frequently interacts with but hasn't created profiles for yet.
 
+## Variables
+
+- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
+
 ## When to Use
 
 - User says "discover people", "who am I missing?", "find untracked people"
@@ -43,7 +47,7 @@ If Gmail MCP is unavailable, skip this step and note the limitation to the user.
 
 ### Step 4: Cross-Reference
 
-1. Read existing profile directories from `~/.local/share/supernemawashi/profiles/`
+1. Read existing profile directories from `PROFILE_DIR/`
 2. Match discovered people against existing profiles by name (case-insensitive, allow partial match — e.g., "John" matches directory "john")
 3. Remove matches from the untracked list
 4. Exclude the user themselves

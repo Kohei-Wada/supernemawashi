@@ -1,11 +1,15 @@
 ---
 name: reply-strategist
-description: Use when user needs help replying to someone, crafting a message, or deciding what to say - references profiles from ~/.local/share/supernemawashi/profiles/ to tailor communication strategy
+description: Use when user needs help replying to someone, crafting a message, or deciding what to say - references profiles to tailor communication strategy
 ---
 
 # Reply Strategist
 
 Help the user craft optimal replies and messages by leveraging profile data about the recipient.
+
+## Variables
+
+- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
 
 ## When to Use
 
@@ -26,7 +30,7 @@ Determine:
 
 ### Step 2: Load Profile
 
-Read the recipient's profile from `~/.local/share/supernemawashi/profiles/<person-name>/`:
+Read the recipient's profile from `PROFILE_DIR/<person-name>/`:
 - `profile.md` — Behavioral patterns and communication strategy
 - `relationship.md` — User's relationship and approach strategy
 - `facts.md` — Recent interactions (for context continuity)

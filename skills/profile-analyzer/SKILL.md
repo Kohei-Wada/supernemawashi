@@ -1,11 +1,15 @@
 ---
 name: profile-analyzer
-description: Use when user wants to analyze a person's behavioral patterns - reads profile data from ~/.local/share/supernemawashi/profiles/ and adds psychological analysis with actionable DO/DON'T communication rules
+description: Use when user wants to analyze a person's behavioral patterns - reads profile data and adds psychological analysis with actionable DO/DON'T communication rules
 ---
 
 # Profile Analyzer
 
 Analyze a person's collected profile data using psychological frameworks to identify behavioral patterns, classify psychological tendencies, and generate evidence-based communication strategies.
+
+## Variables
+
+- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
 
 ## When to Use
 
@@ -15,16 +19,16 @@ Analyze a person's collected profile data using psychological frameworks to iden
 
 ## Prerequisites
 
-A profile must exist at `~/.local/share/supernemawashi/profiles/<person-name>/profile.md`. If it doesn't, tell the user to run profile-collector first.
+A profile must exist at `PROFILE_DIR/<person-name>/profile.md`. If it doesn't, tell the user to run profile-collector first.
 
 ## Process
 
 ### Step 1: Read All Profile Data
 
 Read the following files for the target person:
-- `~/.local/share/supernemawashi/profiles/<person-name>/profile.md`
-- `~/.local/share/supernemawashi/profiles/<person-name>/facts.md` (if exists)
-- `~/.local/share/supernemawashi/profiles/<person-name>/relationship.md` (if exists)
+- `PROFILE_DIR/<person-name>/profile.md`
+- `PROFILE_DIR/<person-name>/facts.md` (if exists)
+- `PROFILE_DIR/<person-name>/relationship.md` (if exists)
 
 ### Step 2: Behavioral Signal Extraction
 
@@ -170,7 +174,7 @@ Write/update the following sections in profile.md. Preserve all existing section
 
 ## Output Format (contradictions.md)
 
-Write/update the following in `~/.local/share/supernemawashi/profiles/<person-name>/contradictions.md`:
+Write/update the following in `PROFILE_DIR/<person-name>/contradictions.md`:
 
 ```markdown
 ---

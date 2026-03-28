@@ -7,6 +7,10 @@ description: Use when user wants to bulk collect, analyze, or update multiple pr
 
 Perform bulk profile collection and analysis across all tracked people.
 
+## Variables
+
+- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
+
 ## When to Use
 
 - User says "update all profiles", "batch update", "re-analyze everyone"
@@ -37,7 +41,7 @@ If ambiguous, ask the user which mode they want.
 4. User can select all, specific profiles, or cancel
 
 **For `all` / `collect` / `analyze` modes:**
-1. List all directories in `~/.local/share/supernemawashi/profiles/`
+1. List all directories in `PROFILE_DIR/`
 2. Skip directories with no `profile.md` (empty profiles)
 3. Present the list and total count to the user for confirmation
 

@@ -46,7 +46,7 @@ For each target channel:
 
 #### Step 4: Cross-Reference
 
-- Read existing profile directories from `~/.local/share/supernemawashi/profiles/`
+- Read existing profile directories from `PROFILE_DIR/`
 - Match discovered people against existing profiles by name (case-insensitive, partial match)
 - Exclude the user themselves
 - Exclude bots and automated accounts (Slackbot, app integrations, etc.)

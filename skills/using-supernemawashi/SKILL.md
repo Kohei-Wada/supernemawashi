@@ -22,9 +22,13 @@ You have access to interpersonal communication skills. These help you navigate w
 
 **Invoke relevant skills BEFORE any response or action.** If a user mentions replying to someone, preparing for a meeting, or dealing with a person — check for applicable skills.
 
+## Variables
+
+- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
+
 ## Profile Data
 
-Profiles are stored in `~/.local/share/supernemawashi/profiles/<person-name>/`:
+Profiles are stored in `PROFILE_DIR/<person-name>/`:
 - `profile.md` — Objective data and behavioral analysis
 - `relationship.md` — Your relationship and approach strategies
 - `facts.md` — Chronological record of statements and actions

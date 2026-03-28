@@ -7,6 +7,10 @@ description: Use when user wants to check which profiles need re-analysis - scan
 
 Check analysis staleness across all profiles and triage which ones need re-analysis.
 
+## Variables
+
+- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
+
 ## When to Use
 
 - User says "check profiles", "which profiles are stale?", "who needs re-analysis?"
@@ -17,7 +21,7 @@ Check analysis staleness across all profiles and triage which ones need re-analy
 
 ### Step 1: Scan Profiles
 
-1. List all directories in `~/.local/share/supernemawashi/profiles/`
+1. List all directories in `PROFILE_DIR/`
 2. For each profile directory, read `profile.md` and extract the `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` HTML comment
 3. Read `facts.md` and count the actual number of fact entries (lines matching the pattern `- [YYYY-MM-DD] [source]`)
 4. Record: profile name, last analyzed date, analyzed facts count, current facts count

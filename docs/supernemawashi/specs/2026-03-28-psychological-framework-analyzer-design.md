@@ -9,7 +9,7 @@ The current profile-analyzer skill produces surface-level behavioral observation
 - Rewrite `skills/profile-analyzer/SKILL.md` analysis steps and output format
 - Add a Framework Reference appendix to SKILL.md
 - Update `skills/reply-strategist/SKILL.md` to reference the new output structure
-- Out of scope: data path migration (`~/.supernemawashi/` to `~/.local/share/`), profile-collector changes
+- Out of scope: ~~data path migration (`~/.supernemawashi/` to `~/.local/share/`)~~ (done), profile-collector changes
 
 ## Chosen Frameworks
 

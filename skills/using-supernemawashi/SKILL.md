@@ -21,7 +21,7 @@ You have access to interpersonal communication skills. These help you navigate w
 
 ## Profile Data
 
-Profiles are stored in `~/.supernemawashi/profiles/<person-name>/`:
+Profiles are stored in `~/.local/share/supernemawashi/profiles/<person-name>/`:
 - `profile.md` — Objective data and behavioral analysis
 - `relationship.md` — Your relationship and approach strategies
 - `facts.md` — Chronological record of statements and actions

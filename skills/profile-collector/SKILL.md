@@ -1,11 +1,11 @@
 ---
 name: profile-collector
-description: Use when user wants to create or update a person's profile - collects data from MCP sources (Slack, Gmail, Calendar, GitHub) and writes to ~/.supernemawashi/profiles/
+description: Use when user wants to create or update a person's profile - collects data from MCP sources (Slack, Gmail, Calendar, GitHub) and writes to ~/.local/share/supernemawashi/profiles/
 ---
 
 # Profile Collector
 
-Collect data about a person from available MCP sources and create or update their profile in `~/.supernemawashi/profiles/`.
+Collect data about a person from available MCP sources and create or update their profile in `~/.local/share/supernemawashi/profiles/`.
 
 ## When to Use
 
@@ -25,7 +25,7 @@ Ask the user:
 
 ### Step 2: Check Existing Profile
 
-Read `~/.supernemawashi/profiles/<person-name>/profile.md` if it exists. Note what data is already collected and when it was last updated.
+Read `~/.local/share/supernemawashi/profiles/<person-name>/profile.md` if it exists. Note what data is already collected and when it was last updated.
 
 ### Step 3: Collect Data from MCP Sources
 
@@ -51,7 +51,7 @@ Use available MCP tools to gather data. For each source:
 
 ### Step 4: Write Profile Files
 
-Create the directory `~/.supernemawashi/profiles/<person-name>/` if it doesn't exist.
+Create the directory `~/.local/share/supernemawashi/profiles/<person-name>/` if it doesn't exist.
 
 **profile.md** — Write with this structure:
 

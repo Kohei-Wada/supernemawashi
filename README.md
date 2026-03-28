@@ -63,7 +63,7 @@ Each classification produces concrete rules: "This person defaults to rationaliz
 
 ### Profile Data Structure
 
-All data is stored locally at `~/.supernemawashi/profiles/<person-name>/`:
+All data is stored locally at `~/.local/share/supernemawashi/profiles/<person-name>/`:
 
 ```
 profile.md          # Basic info + psychological analysis + communication strategy

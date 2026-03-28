@@ -11,7 +11,7 @@ supernemawashi is an interpersonal communication strategy toolkit for engineers,
 - **Plugin type**: Claude Code skill library (same pattern as [superpowers](https://github.com/obra/superpowers))
 - **Skills**: Markdown files in `skills/<skill-name>/SKILL.md` with YAML frontmatter
 - **Hooks**: Session-start hook injects `using-supernemawashi` skill into every session
-- **Profile data**: Stored locally in `~/.supernemawashi/` (not in this repo)
+- **Profile data**: Stored locally in `~/.local/share/supernemawashi/` (not in this repo)
 
 ## Skills
 
@@ -25,7 +25,7 @@ supernemawashi is an interpersonal communication strategy toolkit for engineers,
 ## Key Conventions
 
 - Skill frontmatter `description` field defines trigger conditions, not a summary
-- Profile data is NEVER committed to git — it lives in `~/.supernemawashi/`
+- Profile data is NEVER committed to git — it lives in `~/.local/share/supernemawashi/`
 - Skills use MCP tools (Slack, Gmail, Calendar, GitHub) but never send messages without explicit user confirmation
 - Design specs go in `docs/supernemawashi/specs/`, plans in `docs/supernemawashi/plans/`
 - All documentation and skill files are written in English

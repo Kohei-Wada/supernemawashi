@@ -1,6 +1,6 @@
 ---
 name: profile-analyzer
-description: Use when user wants to analyze a person's behavioral patterns - reads profile data from ~/.supernemawashi/profiles/ and adds psychological analysis with actionable DO/DON'T communication rules
+description: Use when user wants to analyze a person's behavioral patterns - reads profile data from ~/.local/share/supernemawashi/profiles/ and adds psychological analysis with actionable DO/DON'T communication rules
 ---
 
 # Profile Analyzer
@@ -15,16 +15,16 @@ Analyze a person's collected profile data using psychological frameworks to iden
 
 ## Prerequisites
 
-A profile must exist at `~/.supernemawashi/profiles/<person-name>/profile.md`. If it doesn't, tell the user to run profile-collector first.
+A profile must exist at `~/.local/share/supernemawashi/profiles/<person-name>/profile.md`. If it doesn't, tell the user to run profile-collector first.
 
 ## Process
 
 ### Step 1: Read All Profile Data
 
 Read the following files for the target person:
-- `~/.supernemawashi/profiles/<person-name>/profile.md`
-- `~/.supernemawashi/profiles/<person-name>/facts.md` (if exists)
-- `~/.supernemawashi/profiles/<person-name>/relationship.md` (if exists)
+- `~/.local/share/supernemawashi/profiles/<person-name>/profile.md`
+- `~/.local/share/supernemawashi/profiles/<person-name>/facts.md` (if exists)
+- `~/.local/share/supernemawashi/profiles/<person-name>/relationship.md` (if exists)
 
 ### Step 2: Behavioral Signal Extraction
 

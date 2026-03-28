@@ -98,128 +98,17 @@ Write results to profile.md. Report summary to user including:
 - Recommended strategies (top 3 DO/DON'T highlights)
 - Data gaps and collection recommendations
 
-## Output Format (profile.md)
+## Output Format
 
-```markdown
-## Behavioral Patterns
-
-### Core Pattern
-[1-3 sentence synthesis across all frameworks]
-
-### Framework Classifications
-
-| Framework | Classification | Confidence | Evidence |
-|---|---|---|---|
-| Defense Mechanisms | [mechanisms] | Confirmed/Hypothesis | [evidence summary] |
-| Conflict Mode (TKI) | [modes, context-dependent] | ... | ... |
-| Ego States (TA) | [states per relationship] | ... | ... |
-| Core Motivators | [SDT/McClelland needs] | ... | ... |
-| Cognitive Biases | [top biases] | ... | ... |
-| Attachment Style | [style] | ... | ... |
-
-### Communication Strategy
-
-#### When Requesting
-**DO:**
-- [Action] [Framework: tag + evidence]
-- ...
-
-**DON'T:**
-- [Action] [Framework: tag + evidence]
-- ...
-
-#### During Conflict
-**DO:** ...
-**DON'T:** ...
-
-#### When Reporting
-**DO:** ...
-**DON'T:** ...
-
-#### Routine Collaboration
-**DO:** ...
-**DON'T:** ...
-
-### Data Gaps
-- [ ] [Missing dimension]: [what to collect and how]
-```
+See `skills/profile-analyzer/OUTPUT-FORMAT.md` for the canonical output format specifications for profile.md and contradictions.md.
 
 ## Re-analysis Rules
 
-- Each framework row embeds `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` HTML comment
-- On re-analysis: only update framework dimensions that have new facts since last analysis
-- Lines tagged `<!-- manual -->` are preserved across re-analysis
-- The Core Pattern is always regenerated (it depends on all frameworks)
+See the Re-analysis Rules section in `skills/profile-analyzer/SKILL.md` for the canonical rules.
 
-## Framework Reference (SKILL.md Appendix)
-
-SKILL.md includes a reference table for each framework to ensure consistent classification across sessions:
-
-```markdown
 ## Framework Reference
 
-### Defense Mechanisms
-| Mechanism | Definition | Observable Signals | DO | DON'T |
-|---|---|---|---|---|
-| Avoidance | Evading threatening topics/decisions | Non-response, topic change, delayed reply on contentious topics only | Lower the stakes; break into small asks | Chase in the avoided channel; send long messages |
-| Passive Aggression | Indirect resistance while appearing compliant | "Sure, I'll do it" + no action; backhanded compliments; strategic delays | Name the specific behavior neutrally | Call out "you're being passive-aggressive" |
-| Rationalization | Post-hoc justification to protect self-image | Long explanations for failures; "because..." chains | Validate reasoning, then redirect to future | Argue against the justification directly |
-| Projection | Attributing own behavior to others | Accusing others of their own patterns | Address the projected behavior factually | Mirror the accusation back |
-| Displacement | Redirecting frustration to safe targets | Harsh to juniors after pressure from above | Don't engage when freshly stressed; revisit later | Confront during displacement episode |
-| Info Withholding | Keeping information as leverage | Reveals info only after others commit | Present all your info first; leave no gaps | Share info incrementally (invites reciprocal withholding) |
-| Venting | Extended emotional discharge | Long emotional messages, escalation | Let them finish before problem-solving | Jump to solutions mid-vent |
-| Rumination | Returning to past grievances | Repeated references to old incidents | Acknowledge the past issue proactively | Dismiss or minimize the old incident |
-| Suppression | Flat affect masking accumulation | Minimal emotional expression, then eventual explosion | Check in periodically; don't assume calm = fine | Pile on requests assuming they're handling it |
-
-### Thomas-Kilmann Conflict Modes
-| Mode | Assertiveness | Cooperativeness | Observable Signals | DO | DON'T |
-|---|---|---|---|---|---|
-| Competing | High | Low | Strong declaratives, overriding suggestions, "I decided" | Present with data; frame as serving their goals; be direct | Match force with force; use tentative language |
-| Collaborating | High | High | Asks questions, builds on ideas, "what if we" | Engage fully; bring options; co-create | Rush to a quick answer; dismiss their input |
-| Compromising | Mid | Mid | "Fair enough", offers trades, splits difference | Propose fair trades; be transparent about priorities | Hold out for everything; appear inflexible |
-| Avoiding | Low | Low | Non-response, "let's table this", delayed replies | Break into small low-threat asks; reduce perceived risk | CC others to force engagement; send long confrontational messages |
-| Accommodating | Low | High | Quick agreement, "sounds good", rarely pushes back | Explicitly ask for concerns; check genuine buy-in | Mistake agreement for buy-in; pile on requests |
-
-### Transactional Analysis Ego States
-| State | Markers | Effective Response |
-|---|---|---|
-| Critical Parent (CP) | "You should", imperatives, blame | Respond from Adult: facts + options. Avoid Adapted Child submission. |
-| Nurturing Parent (NP) | "Don't worry", protective, "let me help" | Accept support gracefully; respond from Adult or Free Child |
-| Adult (A) | Facts, logical questions, "what are the options?" | Match with Adult: data, analysis, options |
-| Free Child (FC) | Humor, informal, spontaneous ideas | Engage playfully when appropriate; don't shut down with CP |
-| Adapted Child (AC) | "Sorry", hedging, "is that okay?" | Respond from NP or Adult to create safety; don't respond from CP |
-
-### Core Motivators
-| Motivator | Source | Observable Signals | Framing Strategy |
-|---|---|---|---|
-| Safety / Predictability | SDT | Resists change, seeks certainty, avoids risk | Lead with risk mitigation; emphasize stability |
-| Autonomy | SDT | "I'd prefer my way", resists process mandates | Specify outcome, let them choose the path |
-| Competence | SDT | Volunteers for expertise areas, avoids unfamiliar domains | Acknowledge expertise; provide clear specs for new areas |
-| Relatedness | SDT | Social messages, team-building, personal questions | Build personal rapport before business asks |
-| Achievement | McClelland | Tracks progress, references KPIs, competitive with self | Include metrics, timelines, visible success criteria |
-| Affiliation | McClelland | Consensus-building, discomfort with disagreement | Frame as team benefit; avoid zero-sum framing |
-| Power | McClelland | Directs others, frames ideas as impact/influence | Frame proposal as expanding their influence |
-
-### Cognitive Biases (Workplace Subset)
-| Bias | Observable Signals | Framing Strategy |
-|---|---|---|
-| Status Quo | "We've always done it this way", resists change proposals | Frame changes as extensions of current approach, not replacements |
-| Anchoring | First number/option dominates their response | Strategically choose your opening number/proposal |
-| Confirmation | Only engages with supporting evidence | Present idea as consistent with their existing beliefs |
-| Sunk Cost | Refuses to abandon failing projects they invested in | Acknowledge investment before proposing alternatives |
-| Authority | Defers to seniority over evidence | Get senior stakeholder buy-in first |
-| Negativity | Focuses on risks over opportunities | Lead with risk mitigation, not opportunity |
-| IKEA Effect | Overvalues ideas they contributed to | Involve them in creating the solution |
-| Loss Aversion | Reacts more strongly to losses than equivalent gains | Frame as "what we lose by not doing this" rather than "what we gain" |
-
-### Attachment Style (Tier 2)
-| Style | Observable Signals | DO | DON'T |
-|---|---|---|---|
-| Secure | Proportionate responses, comfortable with feedback | Communicate directly; give honest feedback | Over-explain or over-manage |
-| Anxious | Follow-up messages, "did you see?", emotional escalation when ignored | Acknowledge receipt promptly; set clear timelines | Leave messages unread; give vague timelines |
-| Avoidant | Short replies, infrequent check-ins, "I'll handle it" | Use async channels; respect autonomy; minimal meetings | Schedule unnecessary check-ins; require emotional debriefs |
-| Disorganized | Contradictory messages, hot/cold, unpredictable | Be consistent and predictable yourself; don't mirror their inconsistency | Assume today's behavior predicts tomorrow's |
-```
+The individual framework files in `skills/profile-analyzer/frameworks/` are the single source of truth for all framework definitions, reference tables, signal tags, and rule generation guidance. See `skills/profile-analyzer/FRAMEWORK-CONTRACT.md` for the file template.
 
 ## Integration with reply-strategist
 

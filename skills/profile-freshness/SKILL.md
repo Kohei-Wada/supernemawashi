@@ -30,13 +30,14 @@ If a profile has no `<!-- analyzed: -->` comment, mark it as "Never Analyzed."
 
 ### Step 2: Classify
 
-Classify each profile into one of three categories:
+Classify each profile into one of four categories:
 
 | Category | Criteria | Priority |
 |----------|----------|----------|
 | **Never Analyzed** | No `<!-- analyzed: -->` comment in profile.md | High |
 | **Stale** | Last analyzed > 7 days ago OR current facts count > analyzed facts count | Medium |
 | **Fresh** | Last analyzed within 7 days AND no new facts | Low (no action) |
+| **No Data** | Profile has profile.md but no facts.md | None (run profile-collector first) |
 
 ### Step 3: Present Dashboard
 

@@ -28,7 +28,7 @@ Infer the mode from the user's request:
 | `all` | "update all", "batch update" | Run collector then analyzer for every profile |
 | `collect` | "collect everyone", "batch collect" | Run collector only for every profile |
 | `analyze` | "analyze everyone", "batch analyze" | Run analyzer only for every profile |
-| `auto` | "update stale", "re-analyze stale" | Use profile-freshness to find stale/never-analyzed profiles, then run analyzer (and optionally collector) for those only |
+| `auto` | "update stale", "re-analyze stale" | Use profile-freshness to find Stale/Never Analyzed profiles, then run analyzer (and optionally collector) for those only |
 
 If ambiguous, ask the user which mode they want.
 
@@ -36,7 +36,7 @@ If ambiguous, ask the user which mode they want.
 
 **For `auto` mode:**
 1. Invoke `profile-freshness` to get the dashboard
-2. Collect the list of profiles with status `stale` or `never_analyzed`
+2. Collect the list of profiles with status `Stale` or `Never Analyzed`
 3. Present the list to the user for confirmation before proceeding
 4. User can select all, specific profiles, or cancel
 

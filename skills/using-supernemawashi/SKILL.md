@@ -11,6 +11,7 @@ You have access to interpersonal communication skills. These help you navigate w
 
 | Skill | Use When |
 |-------|----------|
+| `supernemawashi:profile-batch` | User wants to bulk collect, analyze, or update multiple profiles |
 | `supernemawashi:profile-collector` | User wants to create or update someone's profile |
 | `supernemawashi:profile-analyzer` | User wants to analyze someone's behavioral patterns |
 | `supernemawashi:profile-discovery` | User wants to find people they interact with but haven't profiled yet |

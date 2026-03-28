@@ -41,6 +41,7 @@ After installing, start a new Claude Code session. You should see the supernemaw
 
 | Skill | What it does |
 |-------|-------------|
+| `profile-batch` | Bulk collect, analyze, or update multiple profiles at once |
 | `profile-collector` | Gathers data from MCP sources (Slack, Gmail, Calendar, GitHub) and writes structured profiles |
 | `profile-analyzer` | Classifies behavioral patterns using 6 psychological frameworks and generates situation-indexed DO/DON'T rules |
 | `profile-discovery` | Scans Slack and Gmail to find people you interact with but haven't profiled yet |

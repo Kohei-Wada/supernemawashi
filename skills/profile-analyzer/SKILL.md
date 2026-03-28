@@ -104,13 +104,31 @@ Rules from "Hypothesis" classifications are included but tagged `(hypothesis)`.
 
 Output as the **Communication Strategy** section in profile.md.
 
-### Step 6: Write & Report
+### Step 6: Contradiction Detection
 
-Write all results to profile.md in the format specified below. Also update relationship.md "Approach Strategy" section if it exists.
+Compare facts.md entries to identify inconsistencies — statements or behaviors that contradict each other. Look for:
+
+1. **Verbal contradictions** — Person said X on one occasion but said the opposite on another
+2. **Say-do gaps** — Person stated an intention or value but acted against it
+3. **Audience-dependent behavior** — Person behaves one way with subordinates and the opposite with superiors
+4. **Temporal reversals** — Person took a position, then later reversed it without acknowledging the change
+
+**Rules:**
+- Each contradiction MUST cite 2+ specific facts.md entries as evidence (with dates and sources)
+- Do NOT flag legitimate changes of mind where the person acknowledged the shift
+- Do NOT flag minor inconsistencies — only contradictions that reveal a meaningful behavioral pattern
+- If no contradictions are found, write contradictions.md with an empty entries section and a note: "No contradictions detected with current data."
+
+Output to `contradictions.md` in the format specified below.
+
+### Step 7: Write & Report
+
+Write all results to profile.md in the format specified below. Update relationship.md "Approach Strategy" section if it exists. Write contradiction analysis to contradictions.md.
 
 **Report to user:**
 - Core Pattern (the synthesis)
 - Top 3 most important DO/DON'T rules with reasoning
+- Contradictions detected (count and most significant, if any)
 - Data Gaps and what to collect next
 
 ## Output Format (profile.md)
@@ -163,10 +181,64 @@ Write/update the following sections in profile.md. Preserve all existing section
 - [ ] [Missing dimension or situation]: [what to collect and how]
 ```
 
+## Output Format (contradictions.md)
+
+Write/update the following in `~/.local/share/supernemawashi/profiles/<person-name>/contradictions.md`:
+
+```markdown
+---
+person: [Full Name]
+last_updated: [YYYY-MM-DD]
+---
+
+# Contradictions: [Full Name]
+
+## Verbal Contradictions
+- **[Short label]** — [Summary of the contradiction]
+  - [YYYY-MM-DD] [source] [Statement A] (url)
+  - [YYYY-MM-DD] [source] [Statement B] (url)
+  - **Pattern implication:** [What this reveals about the person]
+
+## Say-Do Gaps
+- **[Short label]** — [Summary]
+  - Said: [YYYY-MM-DD] [source] [What they said] (url)
+  - Did: [YYYY-MM-DD] [source] [What they did] (url)
+  - **Pattern implication:** [What this reveals]
+
+## Audience-Dependent Behavior
+- **[Short label]** — [Summary]
+  - With [audience A]: [YYYY-MM-DD] [source] [Behavior] (url)
+  - With [audience B]: [YYYY-MM-DD] [source] [Opposite behavior] (url)
+  - **Pattern implication:** [What this reveals]
+
+## Temporal Reversals
+- **[Short label]** — [Summary]
+  - Before: [YYYY-MM-DD] [source] [Original position] (url)
+  - After: [YYYY-MM-DD] [source] [Reversed position] (url)
+  - **Pattern implication:** [What this reveals]
+
+<!-- analyzed: YYYY-MM-DD, facts_count: N -->
+```
+
+Omit any category section that has no entries. If no contradictions are found at all, write:
+
+```markdown
+---
+person: [Full Name]
+last_updated: [YYYY-MM-DD]
+---
+
+# Contradictions: [Full Name]
+
+No contradictions detected with current data. Re-run after collecting more facts.
+
+<!-- analyzed: YYYY-MM-DD, facts_count: N -->
+```
+
 ## Re-analysis Rules
 
 - Check `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` comment in profile.md
-- If facts.md has new entries since last analysis, re-run Steps 2-6
+- If facts.md has new entries since last analysis, re-run Steps 2-7
 - Lines tagged `<!-- manual -->` are user additions — preserve them across re-analysis
 - The Core Pattern is always regenerated (it depends on all frameworks)
 - **Update, don't overwrite** — when re-analyzing, preserve manually added notes outside auto-generated sections

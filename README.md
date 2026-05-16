@@ -43,6 +43,7 @@ After installing, start a new Claude Code session. You should see the supernemaw
 |-------|-------------|
 | `profile-collector` | Gathers data from MCP sources (Slack, Gmail, Calendar, GitHub) and writes structured profiles |
 | `profile-analyzer` | Classifies behavioral patterns using 6 psychological frameworks and generates situation-indexed DO/DON'T rules |
+| `profile-viewer` | Read-only view of profiles — list all, show one person, or show a specific section |
 | `profile-discovery` | Scans Slack and Gmail to find people you interact with but haven't profiled yet |
 | `profile-freshness` | Dashboard showing which profiles are stale and need re-analysis |
 | `reply-strategist` | Crafts 2-3 draft messages tailored to the recipient's psychological profile |

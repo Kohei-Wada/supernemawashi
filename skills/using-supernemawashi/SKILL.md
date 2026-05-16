@@ -13,6 +13,7 @@ You have access to interpersonal communication skills. These help you navigate w
 |-------|----------|
 | `supernemawashi:profile-collector` | User wants to create or update someone's profile |
 | `supernemawashi:profile-analyzer` | User wants to analyze someone's behavioral patterns |
+| `supernemawashi:profile-viewer` | User wants to view, list, or display existing profiles (read-only) |
 | `supernemawashi:profile-discovery` | User wants to find people they interact with but haven't profiled yet |
 | `supernemawashi:profile-freshness` | User wants to check which profiles are stale or need re-analysis |
 | `supernemawashi:reply-strategist` | User needs help replying to someone or deciding what to say |
@@ -27,6 +28,9 @@ When the request is ambiguous, use this decision tree:
 
 "analyze X" / "what kind of person is X?"
   → profile-analyzer
+
+"show X" / "view X's profile" / "X見せて" / "Xのprofile" / "list profiles" / "誰がいる?"
+  → profile-viewer
 
 "update all profiles" / "batch update" / "re-analyze everyone"
   → dispatch parallel agents (see Bulk Operations below)
@@ -44,6 +48,7 @@ When the request is ambiguous, use this decision tree:
 **Key disambiguations:**
 - Specific person → `profile-collector` or `profile-analyzer`. Multiple/all people → dispatch parallel agents (see Bulk Operations).
 - "Check" or "status" → `profile-freshness` (read-only by default; can dispatch agents to re-analyze if the user opts in).
+- "Show" / "view" / "見せて" / "見たい" → `profile-viewer` (read-only display, no analysis or modification).
 
 ## Bulk Operations
 

@@ -1,6 +1,6 @@
 ---
 name: profile-collector
-description: Use when user wants to create or update a person's profile - collects data from MCP sources (Slack, Gmail, Calendar, GitHub) and writes to PROFILE_DIR
+description: Use when user wants to create or update a person's profile - collects data from available MCP sources (Slack, Gmail, Calendar, GitHub, and any other discoverable sources via the adapter pattern) and writes to PROFILE_DIR
 ---
 
 # Profile Collector
@@ -27,27 +27,20 @@ Ask the user:
 
 Read `PROFILE_DIR/<person-name>/profile.md` if it exists. Note what data is already collected and when it was last updated.
 
-### Step 3: Collect Data from MCP Sources
+### Step 3: Collect Data from MCP Sources (Adapter-Driven)
 
-Use available MCP tools to gather data. For each source:
+Read all `*.md` files in the `adapters/` directory (relative to this skill). For each adapter:
 
-**Slack:**
-- Search for messages from/mentioning the person using `slack_search_public_and_private`
-- Read recent channels they're active in using `slack_read_channel`
-- Check their profile using `slack_read_user_profile`
-- Look for patterns: response times, tone, frequent phrases, topics
+1. Check the adapter's **MCP Tools Required** section against the tools available in this session.
+2. If all required tools are present, follow the adapter's **Collection Recipe** and apply its **Fact Extraction** rules.
+3. If any required tools are missing, skip the adapter and note the gap in the final report.
 
-**Gmail:**
-- Search for email threads with the person using `gmail_search_messages`
-- Read recent threads using `gmail_read_thread`
-- Look for patterns: formality level, response time, decision-making style
+After running every known adapter, **scan for additional MCP servers** that look communication-relevant but are not covered by an adapter (e.g., Discord, Linear, Notion, Drive). For each uncovered source:
 
-**Calendar:**
-- Check shared meetings using `gcal_list_events`
-- Note meeting frequency, types of meetings they attend
-
-**GitHub (if applicable):**
-- PR review style, comment tone, approval/rejection patterns
+1. Identify search/read tools that can be queried by the target's identifiers (name, email, handles).
+2. Perform best-effort collection following the same shape as the known adapters.
+3. Tag fact entries with `[<slug>]` where `<slug>` is derived from the MCP server name (e.g., `[discord]`, `[linear]`).
+4. If a source proves useful repeatedly, recommend writing a dedicated `adapters/<slug>.md` file for it (see `ADAPTER-CONTRACT.md`).
 
 ### Step 4: Write Profile Files
 
@@ -113,7 +106,7 @@ last_updated: [YYYY-MM-DD]
 
 **Entry format rules:**
 - Each entry is a single line starting with `- [YYYY-MM-DD] [source]`
-- `source` is one of: `slack`, `gmail`, `calendar`, `github`, `manual`
+- `source` is the `output_tag` of an adapter (`slack`, `gmail`, `calendar`, `github`, …), the slug of an uncovered MCP server, or `manual` for user-provided facts
 - URL is optional, appended in parentheses at the end
 - Group entries under `## YYYY-MM` month headers
 - One fact per line — no multi-line entries or continuation lines

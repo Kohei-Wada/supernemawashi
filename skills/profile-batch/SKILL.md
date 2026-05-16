@@ -7,10 +7,6 @@ description: Use when user wants to bulk collect, analyze, or update multiple pr
 
 Perform bulk profile collection and analysis across all tracked people.
 
-## Variables
-
-- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
-
 ## When to Use
 
 - User says "update all profiles", "batch update", "re-analyze everyone"

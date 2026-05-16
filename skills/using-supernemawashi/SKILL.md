@@ -54,6 +54,8 @@ When the request is ambiguous, use this decision tree:
 
 ## Variables
 
+These variables are referenced by all supernemawashi skills. Do not redefine in individual skills.
+
 - `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
 
 ## Profile Data
@@ -65,6 +67,15 @@ Profiles are stored in `PROFILE_DIR/<person-name>/`:
 - `contradictions.md` — Detected contradictions
 
 Always check if a profile exists before advising on communication with someone. If no profile exists, suggest running profile-collector first.
+
+## Situation Categories
+
+DO/DON'T rules in `profile.md` (under the "Communication Strategy" section) are organized by these 4 situation categories. profile-analyzer generates them; reply-strategist consumes them. Do not redefine in individual skills.
+
+1. **When Requesting** — you need something from them
+2. **During Conflict** — disagreement or tension
+3. **When Reporting** — delivering news (good or bad)
+4. **Routine Collaboration** — day-to-day interaction
 
 ## Coexistence with superpowers
 

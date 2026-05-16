@@ -7,10 +7,6 @@ description: Use when user wants to analyze a person's behavioral patterns - rea
 
 Analyze a person's collected profile data using psychological frameworks to identify behavioral patterns, classify psychological tendencies, and generate evidence-based communication strategies.
 
-## Variables
-
-- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
-
 ## When to Use
 
 - User says "analyze X" or "what kind of person is X?"
@@ -77,12 +73,7 @@ Output this as the **Core Pattern** section in profile.md.
 
 ### Step 5: Situation-Indexed Rule Generation
 
-Using the framework classifications from Step 3, generate concrete DO/DON'T rules organized by these 4 situation categories:
-
-1. **When Requesting** — you need something from them
-2. **During Conflict** — disagreement or tension
-3. **When Reporting** — delivering news (good or bad)
-4. **Routine Collaboration** — day-to-day interaction
+Using the framework classifications from Step 3, generate concrete DO/DON'T rules organized by the 4 situation categories (see using-supernemawashi → Situation Categories): **When Requesting**, **During Conflict**, **When Reporting**, **Routine Collaboration**.
 
 **Each rule MUST include:**
 - The concrete action (what to do or not do)

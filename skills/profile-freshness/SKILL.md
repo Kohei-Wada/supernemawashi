@@ -7,10 +7,6 @@ description: Use when user wants to check which profiles need re-analysis - scan
 
 Check analysis staleness across all profiles and triage which ones need re-analysis.
 
-## Variables
-
-- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
-
 ## When to Use
 
 - User says "check profiles", "which profiles are stale?", "who needs re-analysis?"

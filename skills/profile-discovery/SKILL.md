@@ -7,10 +7,6 @@ description: Use when user wants to find people they interact with but haven't p
 
 Scan communication sources to identify people the user frequently interacts with but hasn't created profiles for yet.
 
-## Variables
-
-- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
-
 ## When to Use
 
 - User says "discover people", "who am I missing?", "find untracked people"

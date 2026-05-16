@@ -7,10 +7,6 @@ description: Use when user needs help replying to someone, crafting a message, o
 
 Help the user craft optimal replies and messages by leveraging profile data about the recipient.
 
-## Variables
-
-- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
-
 ## When to Use
 
 - User says "how should I reply to X?"
@@ -44,11 +40,7 @@ Read the recipient's profile from `PROFILE_DIR/<person-name>/`:
 
 ### Step 3: Analyze the Situation
 
-**Map to situation category.** Determine which situation category from the profile's Communication Strategy section applies:
-- **When Requesting** — you need something from them
-- **During Conflict** — disagreement or tension
-- **When Reporting** — delivering news (good or bad)
-- **Routine Collaboration** — day-to-day interaction
+**Map to situation category.** Determine which of the 4 situation categories (see using-supernemawashi → Situation Categories) applies — **When Requesting**, **During Conflict**, **When Reporting**, or **Routine Collaboration** — by reading the matching rules from the profile's Communication Strategy section.
 
 Read the DO/DON'T rules for that situation category. These rules are backed by psychological framework analysis (defense mechanisms, conflict modes, ego states, motivators, cognitive biases) — use the framework tags to explain your reasoning to the user.
 

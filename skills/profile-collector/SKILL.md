@@ -7,10 +7,6 @@ description: Use when user wants to create or update a person's profile - collec
 
 Collect data about a person from available MCP sources and create or update their profile in `PROFILE_DIR/`.
 
-## Variables
-
-- `PROFILE_DIR` = `~/.local/share/supernemawashi/profiles`
-
 ## When to Use
 
 - User says "create a profile for X"

@@ -15,14 +15,18 @@ All profile data stays local on your machine. Nothing is sent externally.
 
 ## Installation
 
-```bash
-claude plugins marketplace add /path/to/supernemawashi
-claude plugins install supernemawashi
+Inside Claude Code, run:
+
 ```
+/plugin marketplace add Kohei-Wada/supernemawashi
+/plugin install supernemawashi@supernemawashi
+```
+
+Then restart your Claude Code session.
 
 ### Verify Installation
 
-After installing, start a new Claude Code session. You should see the supernemawashi skills available. Try:
+In the new session, try:
 
 ```
 "What skills does supernemawashi have?"

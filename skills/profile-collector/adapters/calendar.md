@@ -34,6 +34,14 @@ Signals worth capturing:
 
 URLs are typically omitted. Reference the meeting title in the description when relevant.
 
+## Discovery Recipe
+Used by profile-discovery to find unprofiled people the user interacts with.
+
+1. List events in the scan window (default 14 days) — `list_events` for the user's calendar.
+2. Extract attendees (excluding the user themselves and resources like meeting rooms).
+3. Count meeting participation per attendee.
+4. Return a list of `{email, display_name, meeting_count, top_meeting_titles}` records.
+
 ## Pitfalls
 - **Calendar is structural, not behavioral**: it tells you who meets whom, not what they said. Pair with Slack/Gmail for substance.
 - **Free/busy noise**: declined or tentative invitations may not reflect real engagement.

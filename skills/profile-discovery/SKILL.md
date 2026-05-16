@@ -1,6 +1,6 @@
 ---
 name: profile-discovery
-description: Use when user wants to find people they interact with but haven't profiled yet - scans Slack channels and Gmail for untracked contacts
+description: Use when user wants to find people they interact with but haven't profiled yet - scans available MCP sources (Slack, Gmail, Calendar, GitHub, and any other discoverable sources via the adapter pattern) for untracked contacts
 ---
 
 # Profile Discovery
@@ -16,55 +16,49 @@ Scan communication sources to identify people the user frequently interacts with
 
 ### Step 1: Determine Scope
 
-- If the user specified channel(s): use those channels only
-- If no specification: use Slack MCP tools to find channels the user is a member of. Filter to channels that have had activity in the last 2 weeks.
-- Set scan window: **last 2 weeks** (14 days from today). The user can request a wider window explicitly.
+- If the user specified channel(s): use those as the Slack scope.
+- If no specification: use the per-adapter defaults defined in each adapter's Discovery Recipe.
+- Set scan window: **last 2 weeks** (14 days from today) unless the user requests a wider window.
 
-### Step 2: Scan Slack
+### Step 2: Scan All Sources (Adapter-Driven)
 
-For each target channel:
-1. Use Slack MCP to read recent messages in the channel (within scan window)
-2. Extract unique user IDs/names from message authors
-3. Count messages per person per channel
-4. Track which channels each person appears in
-5. Use Slack MCP to resolve display names for unknown user IDs
+Read all `*.md` files in `../profile-collector/adapters/` (relative to this skill). For each adapter:
 
-Skip bot users and app integrations (identifiable by bot flags or app-generated message subtypes).
+1. Check the adapter's **MCP Tools Required** section against the tools available in this session.
+2. If a `## Discovery Recipe` section exists AND all required tools are present, run the recipe with the scan window from Step 1.
+3. If required tools are missing, skip the adapter and note the gap in the final report.
+4. If the adapter has no Discovery Recipe, skip it (the source has no person-discovery shape).
 
-### Step 3: Scan Gmail
+Each adapter returns a list of person records keyed by the identifier types it knows about (handle / email / display_name / github_login / ...).
 
-1. Use Gmail MCP to search for threads from the last 2 weeks
-2. Read a sample of recent threads to extract sender/recipient names and email addresses
-3. Count threads per person
-4. Match Gmail contacts to Slack users by name or email where possible to deduplicate
+After running every known adapter, scan for additional MCP servers that look discovery-relevant but are not covered. Same best-effort fallback as profile-collector — note any source you use this way so a dedicated adapter file can be added later.
 
-If Gmail MCP is unavailable, skip this step and note the limitation to the user.
+### Step 3: Cross-Reference
 
-### Step 4: Cross-Reference
+1. Read existing profile directories from `PROFILE_DIR/`.
+2. Match discovered people against existing profiles by name (case-insensitive, allow partial match — e.g., "John" matches directory "john") or by email/handle.
+3. Remove matches from the untracked list.
+4. Exclude the user themselves.
+5. **Deduplicate across sources**: same person appearing in multiple adapters (e.g., Slack handle + Gmail address that resolve to the same human) collapses to one row. Match by name first, then email/handle when name is ambiguous.
+6. If a match is uncertain, keep the person in the list with a note: "may already be tracked as [existing profile name]".
 
-1. Read existing profile directories from `PROFILE_DIR/`
-2. Match discovered people against existing profiles by name (case-insensitive, allow partial match — e.g., "John" matches directory "john")
-3. Remove matches from the untracked list
-4. Exclude the user themselves
-5. If a match is uncertain, keep the person in the list with a note: "may already be tracked as [existing profile name]"
+### Step 4: Rank & Present
 
-### Step 5: Rank & Present
-
-Present untracked people in a table sorted by total interaction count (Slack messages + Gmail threads), grouped by frequency:
+Present untracked people in a table sorted by total interaction count (sum across all sources), grouped by frequency:
 
 ```markdown
 ## Untracked People (N found)
 
 ### High Frequency (10+ interactions)
-| # | Name | Slack msgs | Gmail threads | Top channels |
-|---|------|-----------|---------------|-------------|
-| 1 | john | 23 | 2 | #engineering, #support |
-| 2 | alice | 18 | 5 | #engineering, #ops |
+| # | Name        | Sources                           | Top context        |
+|---|-------------|-----------------------------------|--------------------|
+| 1 | alice       | slack: 23, gmail: 2               | #engineering       |
+| 2 | bob         | slack: 18, calendar: 4, github: 1 | weekly 1:1         |
 
 ### Medium Frequency (3-9 interactions)
-| # | Name | Slack msgs | Gmail threads | Top channels |
-|---|------|-----------|---------------|-------------|
-| 3 | bob | 7 | 0 | #design |
+| # | Name        | Sources                           | Top context        |
+|---|-------------|-----------------------------------|--------------------|
+| 3 | carol       | gmail: 7                          | proposal threads   |
 
 ### Low Frequency (1-2 interactions)
 (N people — not listed individually, unlikely to need profiles)
@@ -73,21 +67,22 @@ Present untracked people in a table sorted by total interaction count (Slack mes
 After the table, prompt:
 > "Select people to profile (e.g., '1, 2, 3' or 'all high')"
 
-**If more than 30 untracked people:** Show only High and Medium frequency. Mention the Low frequency count without listing individuals.
+**If more than 30 untracked people:** show only High and Medium frequency; mention the Low frequency count without listing individuals.
 
-**If no untracked people found:** Report that all frequent contacts have profiles. Suggest expanding the scan window or checking different channels.
+**If no untracked people found:** report that all frequent contacts have profiles. Suggest expanding the scan window or checking different channels.
 
-### Step 6: Collect
+### Step 5: Collect
 
 For each person the user selected:
-1. Invoke `profile-collector` for that person
-2. Report completion before moving to the next person
-3. After all collections complete, summarize what was created
+
+1. Invoke `profile-collector` for that person.
+2. Report completion before moving to the next person.
+3. After all collections complete, summarize what was created.
 
 ## Key Principles
 
 - **Discovery, not surveillance** — Find people the user interacts with but forgot to track. Not monitoring people they don't interact with.
 - **User selects** — Never auto-collect without explicit user confirmation.
-- **Deduplicate across sources** — Same person in Slack and Gmail = one row, not two.
+- **Deduplicate across sources** — Same person across N adapters = one row, not N.
 - **Respect scan limits** — 2-week default window keeps MCP call volume reasonable.
-- **Graceful degradation** — If one MCP source is unavailable, proceed with the other.
+- **Graceful degradation** — Adapters whose MCP tools are absent are skipped silently; the user is told what was scanned in the final report.

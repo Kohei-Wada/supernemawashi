@@ -45,10 +45,10 @@ In the new session, try:
 
 | Skill | What it does |
 |-------|-------------|
-| `profile-collector` | Gathers data from MCP sources (Slack, Gmail, Calendar, GitHub) and writes structured profiles |
+| `profile-collector` | Gathers data from MCP sources (Slack, Gmail, Calendar, GitHub, and any source you add via the [adapter pattern](skills/profile-collector/ADAPTER-CONTRACT.md)) and writes structured profiles |
 | `profile-analyzer` | Classifies behavioral patterns using 6 psychological frameworks and generates situation-indexed DO/DON'T rules |
 | `profile-viewer` | Read-only view of profiles — list all, show one person, or show a specific section |
-| `profile-discovery` | Scans Slack and Gmail to find people you interact with but haven't profiled yet |
+| `profile-discovery` | Scans every adapter-supported source to find people you interact with but haven't profiled yet |
 | `profile-freshness` | Dashboard showing which profiles are stale and need re-analysis |
 | `reply-strategist` | Crafts 2-3 draft messages tailored to the recipient's psychological profile |
 | `using-supernemawashi` | Entry point — routes requests to the appropriate skill |

@@ -33,6 +33,17 @@ Signals worth capturing:
 - [YYYY-MM-DD] [github] <observable behavior> (https://github.com/<owner>/<repo>/pull/<num>)
 ```
 
+## Discovery Recipe
+Used by profile-discovery to find unprofiled people the user interacts with.
+
+1. List the user's recent PRs / reviews / issue comments across their org/repos within the scan window (default 14 days).
+   - `gh search prs --author @me --updated ">=YYYY-MM-DD" --limit 50`
+   - `gh search prs --reviewed-by @me --updated ">=YYYY-MM-DD" --limit 50`
+2. Extract co-authors, reviewers, and commenters from those PRs/issues.
+3. Exclude the user themselves and bots (dependabot, copilot, CI bots).
+4. Count interactions per login.
+5. Return a list of `{github_login, display_name, interaction_count}` records.
+
 ## Pitfalls
 - **Permissions**: only access repos the user has permission for. `gh` and the MCP enforce this.
 - **Sampling bias**: PRs from a single intense project will skew tone. Sample across repos when possible.

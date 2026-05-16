@@ -41,6 +41,15 @@ Signals worth capturing:
 
 Permalinks come from the message metadata. Omit the URL only if it cannot be constructed.
 
+## Discovery Recipe
+Used by profile-discovery to find unprofiled people the user interacts with.
+
+1. List the channels the user is a member of, filtered to those with activity in the scan window (default 14 days).
+2. For each channel, read recent messages (`slack_read_channel`).
+3. Extract unique authors; resolve display names via `slack_read_user_profile` if needed.
+4. Count messages per person per channel; track which channels each person appears in.
+5. Return a list of `{handle, display_name, channels, msg_count}` records.
+
 ## Pitfalls
 - **Bot accounts**: filter out app integrations and bot users (check message subtype / bot flags).
 - **Thread bias**: long threads over-represent vocal participants. Weight a single thread as one data point, not N.

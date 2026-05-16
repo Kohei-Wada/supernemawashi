@@ -29,7 +29,8 @@ supernemawashi is an interpersonal communication strategy toolkit for engineers,
 
 - Skill frontmatter `description` field defines trigger conditions, not a summary
 - Profile data is NEVER committed to git — it lives in `~/.local/share/supernemawashi/`
-- Skills use MCP tools (Slack, Gmail, Calendar, GitHub) but never send messages without explicit user confirmation
-- Each skill is self-contained: process in `SKILL.md`, supporting docs (e.g., `OUTPUT-FORMAT.md`, `FRAMEWORK-CONTRACT.md`) alongside it
+- Skills use MCP tools (Slack, Gmail, Calendar, GitHub, plus any source registered as an adapter — see `skills/profile-collector/ADAPTER-CONTRACT.md`) but never send messages without explicit user confirmation
+- Each skill is self-contained: process in `SKILL.md`, supporting docs (e.g., `OUTPUT-FORMAT.md`, `FRAMEWORK-CONTRACT.md`, `ADAPTER-CONTRACT.md`) alongside it
+- MCP source recipes live in `skills/profile-collector/adapters/<name>.md` and are consumed by both `profile-collector` (Collection Recipe) and `profile-discovery` (Discovery Recipe)
 - All documentation and skill files are written in English
 - Use fictional names (e.g., "John", "Alice") in README and public-facing examples — never use real people's names

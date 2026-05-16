@@ -11,7 +11,6 @@ Check analysis staleness across all profiles and triage which ones need re-analy
 
 - User says "check profiles", "which profiles are stale?", "who needs re-analysis?"
 - User says "profile status" or "freshness check"
-- Before running profile-batch (as a pre-processing step)
 
 ## Process
 
@@ -62,10 +61,9 @@ After the dashboard, prompt:
 
 ### Step 4: Re-analyze (Optional)
 
-If the user selects profiles to re-analyze:
-1. Invoke `profile-analyzer` for each selected profile
-2. Report completion after each
-3. Show updated dashboard summary when done
+If the user selects profiles to re-analyze, dispatch parallel agents — one per profile — each invoking `profile-analyzer`. profile-analyzer is local-file-only (no MCP calls), so parallelism is unconstrained.
+
+After all agents return, show an updated dashboard summary.
 
 ## Edge Cases
 
@@ -78,4 +76,4 @@ If the user selects profiles to re-analyze:
 
 - **Read-only by default** — This skill only reads and reports. Re-analysis happens only when the user explicitly requests it.
 - **Actionable output** — The dashboard should make it immediately clear what needs attention and why.
-- **Compatible with profile-batch** — The "Needs Re-analysis" list can be used as input for batch operations.
+- **Parallel re-analysis** — When the user opts in, dispatch one agent per stale profile in parallel.

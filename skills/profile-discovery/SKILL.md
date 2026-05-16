@@ -11,7 +11,6 @@ Scan communication sources to identify people the user frequently interacts with
 
 - User says "discover people", "who am I missing?", "find untracked people"
 - User says "discover people in #channel-name" (scoped scan)
-- After profile-batch completes (suggest as a follow-up)
 
 ## Process
 

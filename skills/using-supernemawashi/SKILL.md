@@ -11,7 +11,6 @@ You have access to interpersonal communication skills. These help you navigate w
 
 | Skill | Use When |
 |-------|----------|
-| `supernemawashi:profile-batch` | User wants to bulk collect, analyze, or update multiple profiles |
 | `supernemawashi:profile-collector` | User wants to create or update someone's profile |
 | `supernemawashi:profile-analyzer` | User wants to analyze someone's behavioral patterns |
 | `supernemawashi:profile-discovery` | User wants to find people they interact with but haven't profiled yet |
@@ -29,12 +28,11 @@ When the request is ambiguous, use this decision tree:
 "analyze X" / "what kind of person is X?"
   → profile-analyzer
 
-"update all profiles" / "batch update"
-  → profile-batch
+"update all profiles" / "batch update" / "re-analyze everyone"
+  → dispatch parallel agents (see Bulk Operations below)
 
 "check profiles" / "which are stale?" / "who needs re-analysis?"
-  → profile-freshness
-  → then profile-batch (if user wants to act on results)
+  → profile-freshness (can launch parallel agents to re-analyze)
 
 "discover people" / "who am I missing?"
   → profile-discovery
@@ -44,9 +42,17 @@ When the request is ambiguous, use this decision tree:
 ```
 
 **Key disambiguations:**
-- Specific person → `profile-collector` or `profile-analyzer`. Multiple/all people → `profile-batch`.
-- "Check" or "status" → `profile-freshness` (read-only). "Update" or "re-analyze" → `profile-batch` (takes action).
-- `profile-freshness` is often a precursor to `profile-batch` — suggest the next step after showing results.
+- Specific person → `profile-collector` or `profile-analyzer`. Multiple/all people → dispatch parallel agents (see Bulk Operations).
+- "Check" or "status" → `profile-freshness` (read-only by default; can dispatch agents to re-analyze if the user opts in).
+
+## Bulk Operations
+
+For multi-person operations ("update all profiles", "batch update", "re-analyze everyone"), dispatch parallel agents — one per person — each invoking the appropriate skill. Aggregate results in the main session.
+
+- `profile-analyzer` is local-file-only, so parallelism is unconstrained.
+- `profile-collector` hits MCP sources (Slack/Gmail/Calendar/GitHub); for 5+ profiles, stagger dispatch in batches of 5 to avoid rate limits.
+
+To triage first (find stale profiles, then re-analyze only those), use `profile-freshness`.
 
 ## The Rule
 

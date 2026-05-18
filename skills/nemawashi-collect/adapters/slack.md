@@ -25,7 +25,7 @@ If any of the above is unavailable, skip this adapter.
 5. Identify the top 3-5 channels they are active in; sample recent activity (`slack_read_channel`).
 
 ## Fact Extraction
-Record observable behaviors only — what they said, how they replied, who they tagged. Do not infer psychology (that is profile-analyzer's job).
+Record observable behaviors only — what they said, how they replied, who they tagged. Do not infer psychology (that is nemawashi-analyze's job).
 
 Signals worth capturing:
 - Response latency on contentious vs. routine topics
@@ -42,7 +42,7 @@ Signals worth capturing:
 Permalinks come from the message metadata. Omit the URL only if it cannot be constructed.
 
 ## Discovery Recipe
-Used by profile-discovery to find unprofiled people the user interacts with.
+Used by nemawashi-discover to find unprofiled people the user interacts with.
 
 1. List the channels the user is a member of, filtered to those with activity in the scan window (default 14 days).
 2. For each channel, read recent messages (`slack_read_channel`).

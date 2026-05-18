@@ -43,19 +43,21 @@ In the new session, try:
 
 ### Skills
 
+All operational skills are verb-first under the `nemawashi-` prefix.
+
 | Skill | What it does |
 |-------|-------------|
-| `profile-collector` | Gathers data from MCP sources (Slack, Gmail, Calendar, GitHub, and any source you add via the [adapter pattern](skills/profile-collector/ADAPTER-CONTRACT.md)) and writes structured profiles |
-| `profile-analyzer` | Classifies behavioral patterns using 6 psychological frameworks and generates situation-indexed DO/DON'T rules |
-| `profile-viewer` | Read-only view of profiles — list all, show one person, or show a specific section |
-| `profile-discovery` | Scans every adapter-supported source to find people you interact with but haven't profiled yet |
-| `profile-freshness` | Dashboard showing which profiles are stale and need re-analysis |
-| `reply-strategist` | Crafts 2-3 draft messages tailored to the recipient's psychological profile |
+| `nemawashi-collect` | Gathers data from MCP sources (Slack, Gmail, Calendar, GitHub, and any source you add via the [adapter pattern](skills/nemawashi-collect/ADAPTER-CONTRACT.md)) and writes structured profiles |
+| `nemawashi-analyze` | Classifies behavioral patterns using 6 psychological frameworks and generates situation-indexed DO/DON'T rules |
+| `nemawashi-show` | Read-only view of profiles — list all, show one person, or show a specific section |
+| `nemawashi-discover` | Scans every adapter-supported source to find people you interact with but haven't profiled yet |
+| `nemawashi-check` | Dashboard showing which profiles are stale and need re-analysis |
+| `nemawashi-reply` | Crafts 2-3 draft messages tailored to the recipient's psychological profile |
 | `using-supernemawashi` | Entry point — routes requests to the appropriate skill |
 
 ### Psychological Frameworks
 
-The `profile-analyzer` uses these established frameworks to move beyond surface-level observations:
+The `nemawashi-analyze` skill uses these established frameworks to move beyond surface-level observations:
 
 | Framework | What it reveals |
 |-----------|----------------|

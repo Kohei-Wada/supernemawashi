@@ -1,5 +1,5 @@
 ---
-name: profile-freshness
+name: nemawashi-check
 description: Use when user wants to check which profiles need re-analysis - scans all profiles for staleness and new unanalyzed data
 ---
 
@@ -32,7 +32,7 @@ Classify each profile into one of four categories:
 | **Never Analyzed** | No `<!-- analyzed: -->` comment in profile.md | High |
 | **Stale** | Last analyzed > 7 days ago OR current facts count > analyzed facts count | Medium |
 | **Fresh** | Last analyzed within 7 days AND no new facts | Low (no action) |
-| **No Data** | Profile has profile.md but no facts.md | None (run profile-collector first) |
+| **No Data** | Profile has profile.md but no facts.md | None (run nemawashi-collect first) |
 
 ### Step 3: Present Dashboard
 
@@ -61,15 +61,15 @@ After the dashboard, prompt:
 
 ### Step 4: Re-analyze (Optional)
 
-If the user selects profiles to re-analyze, dispatch parallel agents — one per profile — each invoking `profile-analyzer`. profile-analyzer is local-file-only (no MCP calls), so parallelism is unconstrained.
+If the user selects profiles to re-analyze, dispatch parallel agents — one per profile — each invoking `nemawashi-analyze`. nemawashi-analyze is local-file-only (no MCP calls), so parallelism is unconstrained.
 
 After all agents return, show an updated dashboard summary.
 
 ## Edge Cases
 
-- **No profiles exist**: Report that no profiles were found. Suggest running profile-collector or profile-discovery first.
+- **No profiles exist**: Report that no profiles were found. Suggest running nemawashi-collect or nemawashi-discover first.
 - **All profiles fresh**: Report that everything is up to date. No action needed.
-- **Profile has profile.md but no facts.md**: Mark as "No data collected — run profile-collector first." Do not suggest re-analysis.
+- **Profile has profile.md but no facts.md**: Mark as "No data collected — run nemawashi-collect first." Do not suggest re-analysis.
 - **Analyzed comment exists but is malformed**: Treat as "Never Analyzed" and note the parsing issue.
 
 ## Key Principles

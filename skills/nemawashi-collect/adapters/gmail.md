@@ -38,7 +38,7 @@ Signals worth capturing:
 URLs are typically omitted for Gmail; reference the thread subject in the description when useful.
 
 ## Discovery Recipe
-Used by profile-discovery to find unprofiled people the user interacts with.
+Used by nemawashi-discover to find unprofiled people the user interacts with.
 
 1. Search threads in the scan window (default 14 days) — `search_threads` with date filter.
 2. Sample recent threads (`get_thread`) and extract `From:` / `To:` / `Cc:` addresses with display names.

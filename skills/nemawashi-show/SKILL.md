@@ -1,5 +1,5 @@
 ---
-name: profile-viewer
+name: nemawashi-show
 description: Use when user wants to view, show, list, or display profile data for one or more people - read-only display of profiles stored in PROFILE_DIR
 ---
 
@@ -12,12 +12,12 @@ Display profile data so the user can quickly review what's been collected and an
 - User says "show profile for X", "view X's profile", "Xを見せて", "Xのprofile"
 - User says "list profiles", "who do I have profiles for?", "profile一覧", "誰のprofileある?"
 - User wants a specific section: "X's DO/DON'T", "Xのfacts", "Xの矛盾", "X's contradictions"
-- User wants to spot-check after running `profile-collector` or `profile-analyzer`
+- User wants to spot-check after running `nemawashi-collect` or `nemawashi-analyze`
 
 **Not for:**
-- Editing → `profile-collector` (creates/updates raw data) or `profile-analyzer` (regenerates analysis)
-- Staleness triage → `profile-freshness`
-- Crafting replies → `reply-strategist`
+- Editing → `nemawashi-collect` (creates/updates raw data) or `nemawashi-analyze` (regenerates analysis)
+- Staleness triage → `nemawashi-check`
+- Crafting replies → `nemawashi-reply`
 
 ## Process
 
@@ -51,7 +51,7 @@ Section keywords (case-insensitive):
 2. **Exact match** (case-insensitive) → use it.
 3. **Prefix match** → use it.
 4. **Substring match** → if exactly one, use it. If multiple, list candidates and ask which.
-5. **No match** → report "No profile for '<name>'. Did you mean: <closest>?" or suggest running `profile-collector` if there are no close matches.
+5. **No match** → report "No profile for '<name>'. Did you mean: <closest>?" or suggest running `nemawashi-collect` if there are no close matches.
 
 ### Step 3: Execute
 
@@ -79,7 +79,7 @@ Section keywords (case-insensitive):
 1. Read `profile.md` and render it as-is. Do NOT summarize or paraphrase — the user wants to see the actual content.
 2. After `profile.md`, append a short footer:
    > Also available: `<name> relationship`, `<name> facts`, `<name> contradictions`.
-3. If `profile.md` is missing but `facts.md` exists, render `facts.md` and note "No analyzed profile yet — run `profile-analyzer` for <name>."
+3. If `profile.md` is missing but `facts.md` exists, render `facts.md` and note "No analyzed profile yet — run `nemawashi-analyze` for <name>."
 
 #### Section operation
 
@@ -89,7 +89,7 @@ Section keywords (case-insensitive):
 
 ### Step 4: Handle Empty / Missing States
 
-- **No profiles at all**: "No profiles found in `PROFILE_DIR/`. Run `profile-collector` or `profile-discovery` to start."
+- **No profiles at all**: "No profiles found in `PROFILE_DIR/`. Run `nemawashi-collect` or `nemawashi-discover` to start."
 - **Profile dir exists but is empty**: same as above for that person.
 - **`facts.md` is missing**: facts count = 0.
 - **`contradictions.md` has only a header (no entries)**: report "—" in the list view; in section view, render it as-is so the user sees it's empty.
@@ -97,7 +97,7 @@ Section keywords (case-insensitive):
 ## Output Style
 
 - **Render markdown as-is.** Profiles are written in markdown — display them directly so the user sees the source.
-- **No paraphrasing or summarization.** This skill is a read tool, not an analysis tool. If the user wants analysis, route them to `profile-analyzer`.
+- **No paraphrasing or summarization.** This skill is a read tool, not an analysis tool. If the user wants analysis, route them to `nemawashi-analyze`.
 - **Quote the path** at the top so the user can `vim` it if they want to edit:
   ```
   📄 ~/.local/share/supernemawashi/profiles/alice/profile.md
@@ -107,8 +107,8 @@ Section keywords (case-insensitive):
 ## Edge Cases
 
 - Profile name contains spaces or non-ASCII: use exact-match path resolution; do not URL-encode.
-- User asks for a profile that exists but `profile.md` is missing (only `facts.md`): render `facts.md` and suggest running `profile-analyzer`.
-- User asks for a section that doesn't exist (e.g., `alice strategy` when there's no Communication Strategy yet): report missing and suggest running `profile-analyzer`.
+- User asks for a profile that exists but `profile.md` is missing (only `facts.md`): render `facts.md` and suggest running `nemawashi-analyze`.
+- User asks for a section that doesn't exist (e.g., `alice strategy` when there's no Communication Strategy yet): report missing and suggest running `nemawashi-analyze`.
 - Ambiguous fuzzy match: list candidates and ask. Do not guess.
 
 ## Key Principles

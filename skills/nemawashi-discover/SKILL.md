@@ -1,5 +1,5 @@
 ---
-name: profile-discovery
+name: nemawashi-discover
 description: Use when user wants to find people they interact with but haven't profiled yet - scans available MCP sources (Slack, Gmail, Calendar, GitHub, and any other discoverable sources via the adapter pattern) for untracked contacts
 ---
 
@@ -22,7 +22,7 @@ Scan communication sources to identify people the user frequently interacts with
 
 ### Step 2: Scan All Sources (Adapter-Driven)
 
-Read all `*.md` files in `../profile-collector/adapters/` (relative to this skill). For each adapter:
+Read all `*.md` files in `../nemawashi-collect/adapters/` (relative to this skill). For each adapter:
 
 1. Check the adapter's **MCP Tools Required** section against the tools available in this session.
 2. If a `## Discovery Recipe` section exists AND all required tools are present, run the recipe with the scan window from Step 1.
@@ -31,7 +31,7 @@ Read all `*.md` files in `../profile-collector/adapters/` (relative to this skil
 
 Each adapter returns a list of person records keyed by the identifier types it knows about (handle / email / display_name / github_login / ...).
 
-After running every known adapter, scan for additional MCP servers that look discovery-relevant but are not covered. Same best-effort fallback as profile-collector — note any source you use this way so a dedicated adapter file can be added later.
+After running every known adapter, scan for additional MCP servers that look discovery-relevant but are not covered. Same best-effort fallback as nemawashi-collect — note any source you use this way so a dedicated adapter file can be added later.
 
 ### Step 3: Cross-Reference
 
@@ -75,7 +75,7 @@ After the table, prompt:
 
 For each person the user selected:
 
-1. Invoke `profile-collector` for that person.
+1. Invoke `nemawashi-collect` for that person.
 2. Report completion before moving to the next person.
 3. After all collections complete, summarize what was created.
 

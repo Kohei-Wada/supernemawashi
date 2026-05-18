@@ -35,7 +35,7 @@ Signals worth capturing:
 URLs are typically omitted. Reference the meeting title in the description when relevant.
 
 ## Discovery Recipe
-Used by profile-discovery to find unprofiled people the user interacts with.
+Used by nemawashi-discover to find unprofiled people the user interacts with.
 
 1. List events in the scan window (default 14 days) — `list_events` for the user's calendar.
 2. Extract attendees (excluding the user themselves and resources like meeting rooms).

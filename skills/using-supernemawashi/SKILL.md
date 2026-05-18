@@ -9,14 +9,18 @@ You have access to interpersonal communication skills. These help you navigate w
 
 ## Available Skills
 
+All skills are verb-first under the `nemawashi-` prefix.
+
 | Skill | Use When |
 |-------|----------|
-| `supernemawashi:profile-collector` | User wants to create or update someone's profile |
-| `supernemawashi:profile-analyzer` | User wants to analyze someone's behavioral patterns |
-| `supernemawashi:profile-viewer` | User wants to view, list, or display existing profiles (read-only) |
-| `supernemawashi:profile-discovery` | User wants to find people they interact with but haven't profiled yet |
-| `supernemawashi:profile-freshness` | User wants to check which profiles are stale or need re-analysis |
-| `supernemawashi:reply-strategist` | User needs help replying to someone or deciding what to say |
+| `supernemawashi:nemawashi-collect` | User wants to create or update someone's profile |
+| `supernemawashi:nemawashi-analyze` | User wants to analyze someone's behavioral patterns |
+| `supernemawashi:nemawashi-show` | User wants to view, list, or display existing profiles (read-only) |
+| `supernemawashi:nemawashi-discover` | User wants to find people they interact with but haven't profiled yet |
+| `supernemawashi:nemawashi-check` | User wants to check which profiles are stale or need re-analysis |
+| `supernemawashi:nemawashi-reply` | User needs help replying to someone or deciding what to say |
+
+Updating a profile is normally a 2-step pipeline: **nemawashi-collect** (pull from MCP sources — slow, rate-limited) → **nemawashi-analyze** (local-only — fast). They are kept as separate skills so re-analysis without re-collection is cheap.
 
 ## Skill Routing
 
@@ -24,40 +28,40 @@ When the request is ambiguous, use this decision tree:
 
 ```
 "update/collect profile for X" (specific person)
-  → profile-collector
+  → nemawashi-collect (then suggest nemawashi-analyze)
 
 "analyze X" / "what kind of person is X?"
-  → profile-analyzer
+  → nemawashi-analyze
 
 "show X" / "view X's profile" / "X見せて" / "Xのprofile" / "list profiles" / "誰がいる?"
-  → profile-viewer
+  → nemawashi-show
 
 "update all profiles" / "batch update" / "re-analyze everyone"
   → dispatch parallel agents (see Bulk Operations below)
 
 "check profiles" / "which are stale?" / "who needs re-analysis?"
-  → profile-freshness (can launch parallel agents to re-analyze)
+  → nemawashi-check (can launch parallel agents to re-analyze)
 
 "discover people" / "who am I missing?"
-  → profile-discovery
+  → nemawashi-discover
 
 "how should I reply to X?" / "what should I say?"
-  → reply-strategist
+  → nemawashi-reply
 ```
 
 **Key disambiguations:**
-- Specific person → `profile-collector` or `profile-analyzer`. Multiple/all people → dispatch parallel agents (see Bulk Operations).
-- "Check" or "status" → `profile-freshness` (read-only by default; can dispatch agents to re-analyze if the user opts in).
-- "Show" / "view" / "見せて" / "見たい" → `profile-viewer` (read-only display, no analysis or modification).
+- Specific person → `nemawashi-collect` or `nemawashi-analyze`. Multiple/all people → dispatch parallel agents (see Bulk Operations).
+- "Check" or "status" → `nemawashi-check` (read-only by default; can dispatch agents to re-analyze if the user opts in).
+- "Show" / "view" / "見せて" / "見たい" → `nemawashi-show` (read-only display, no analysis or modification).
 
 ## Bulk Operations
 
 For multi-person operations ("update all profiles", "batch update", "re-analyze everyone"), dispatch parallel agents — one per person — each invoking the appropriate skill. Aggregate results in the main session.
 
-- `profile-analyzer` is local-file-only, so parallelism is unconstrained.
-- `profile-collector` hits MCP sources (Slack/Gmail/Calendar/GitHub); for 5+ profiles, stagger dispatch in batches of 5 to avoid rate limits.
+- `nemawashi-analyze` is local-file-only, so parallelism is unconstrained.
+- `nemawashi-collect` hits MCP sources (Slack/Gmail/Calendar/GitHub); for 5+ profiles, stagger dispatch in batches of 5 to avoid rate limits.
 
-To triage first (find stale profiles, then re-analyze only those), use `profile-freshness`.
+To triage first (find stale profiles, then re-analyze only those), use `nemawashi-check`.
 
 ## The Rule
 
@@ -77,11 +81,11 @@ Profiles are stored in `PROFILE_DIR/<person-name>/`:
 - `facts.md` — Chronological record of statements and actions
 - `contradictions.md` — Detected contradictions
 
-Always check if a profile exists before advising on communication with someone. If no profile exists, suggest running profile-collector first.
+Always check if a profile exists before advising on communication with someone. If no profile exists, suggest running nemawashi-collect first.
 
 ## Situation Categories
 
-DO/DON'T rules in `profile.md` (under the "Communication Strategy" section) are organized by these 4 situation categories. profile-analyzer generates them; reply-strategist consumes them. Do not redefine in individual skills.
+DO/DON'T rules in `profile.md` (under the "Communication Strategy" section) are organized by these 4 situation categories. nemawashi-analyze generates them; nemawashi-reply consumes them. Do not redefine in individual skills.
 
 1. **When Requesting** — you need something from them
 2. **During Conflict** — disagreement or tension

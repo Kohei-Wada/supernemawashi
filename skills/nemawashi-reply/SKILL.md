@@ -1,5 +1,5 @@
 ---
-name: reply-strategist
+name: nemawashi-reply
 description: Use when user needs help replying to someone, crafting a message, or deciding what to say - references profiles to tailor communication strategy
 ---
 
@@ -33,7 +33,7 @@ Read the recipient's profile from `PROFILE_DIR/<person-name>/`:
 - `contradictions.md` — Known contradictions (useful for difficult conversations)
 
 **If no profile exists:** Tell the user and offer two options:
-1. Run profile-collector first for a data-informed reply
+1. Run nemawashi-collect first for a data-informed reply
 2. Proceed without a profile (generic advice only)
 
 **If profile is stale** (last_updated > 30 days): Suggest updating, but proceed with existing data if user wants a quick reply.

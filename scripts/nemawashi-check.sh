@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# profile-freshness.sh — Check analysis staleness across all profiles
-# Usage: profile-freshness.sh [profiles_dir]
+# nemawashi-check.sh — Check analysis staleness across all profiles
+# Usage: nemawashi-check.sh [profiles_dir]
 # Output: TSV with columns: name, analyzed_date, days_ago, analyzed_facts, current_facts, status
 #
 # Standard facts.md entry format:

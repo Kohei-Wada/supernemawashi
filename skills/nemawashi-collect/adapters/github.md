@@ -34,7 +34,7 @@ Signals worth capturing:
 ```
 
 ## Discovery Recipe
-Used by profile-discovery to find unprofiled people the user interacts with.
+Used by nemawashi-discover to find unprofiled people the user interacts with.
 
 1. List the user's recent PRs / reviews / issue comments across their org/repos within the scan window (default 14 days).
    - `gh search prs --author @me --updated ">=YYYY-MM-DD" --limit 50`

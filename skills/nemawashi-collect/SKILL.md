@@ -1,5 +1,5 @@
 ---
-name: profile-collector
+name: nemawashi-collect
 description: Use when user wants to create or update a person's profile - collects data from available MCP sources (Slack, Gmail, Calendar, GitHub, and any other discoverable sources via the adapter pattern) and writes to PROFILE_DIR
 ---
 
@@ -12,7 +12,7 @@ Collect data about a person from available MCP sources and create or update thei
 - User says "create a profile for X"
 - User says "update X's profile"
 - User says "collect info about X"
-- Another skill (e.g., reply-strategist) detects a stale or missing profile
+- Another skill (e.g., nemawashi-reply) detects a stale or missing profile
 
 ## Process
 
@@ -69,7 +69,7 @@ sources: [list of MCP sources used]
 - [Tone and formality level]
 
 ## Behavioral Patterns (Level B)
-<!-- Left empty for profile-analyzer to fill -->
+<!-- Left empty for nemawashi-analyze to fill -->
 ```
 
 **relationship.md** — Ask the user about their relationship:
@@ -85,7 +85,7 @@ last_updated: [YYYY-MM-DD]
 - [User-provided context about their relationship]
 
 ## Approach Strategy
-<!-- Populated after profile-analyzer runs -->
+<!-- Populated after nemawashi-analyze runs -->
 ```
 
 **facts.md** — Record notable statements and observations. Use the standard entry format:
@@ -121,12 +121,12 @@ last_updated: [YYYY-MM-DD]
 ### Step 5: Suggest Next Steps
 
 After collection, suggest:
-- "Profile created. Run profile-analyzer to identify behavioral patterns?"
+- "Profile created. Run nemawashi-analyze to identify behavioral patterns?"
 - If the profile already existed: summarize what was updated
 
 ## Key Principles
 
-- **Collect, don't interpret** — This skill gathers raw data. Leave analysis to profile-analyzer.
+- **Collect, don't interpret** — This skill gathers raw data. Leave analysis to nemawashi-analyze.
 - **Cite sources** — Every fact in facts.md must have a source tag ([slack], [gmail], etc.)
 - **Ask about relationship** — Only the user knows their subjective relationship with the person. Always ask.
 - **Respect privacy** — Only collect data from sources the user has MCP access to. Do not speculate beyond available data.

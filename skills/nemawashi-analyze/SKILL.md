@@ -1,5 +1,5 @@
 ---
-name: profile-analyzer
+name: nemawashi-analyze
 description: Use when user wants to analyze a person's behavioral patterns - reads profile data and adds psychological analysis with actionable DO/DON'T communication rules
 ---
 
@@ -10,12 +10,12 @@ Analyze a person's collected profile data using psychological frameworks to iden
 ## When to Use
 
 - User says "analyze X" or "what kind of person is X?"
-- After profile-collector finishes (suggest this automatically)
+- After nemawashi-collect finishes (suggest this automatically)
 - User wants to update analysis with new data
 
 ## Prerequisites
 
-A profile must exist at `PROFILE_DIR/<person-name>/profile.md`. If it doesn't, tell the user to run profile-collector first.
+A profile must exist at `PROFILE_DIR/<person-name>/profile.md`. If it doesn't, tell the user to run nemawashi-collect first.
 
 ## Process
 

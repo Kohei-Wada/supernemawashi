@@ -151,6 +151,54 @@ Optional filter: `<name> do/don't <framework-slug>` restricts to a single framew
 - User asks for a section that doesn't exist (e.g., `alice strategy` when there's no Communication Strategy yet): report missing and suggest running `nemawashi-analyze`.
 - Ambiguous fuzzy match: list candidates and ask. Do not guess.
 
+## Time-travel flags (#41)
+
+After #41 lands, each `frameworks/<slug>.md` is a derived snapshot of the latest assertion in `frameworks/<slug>.jsonl`. Two new flags let the user query past states.
+
+### `nemawashi-show <name> --as-of YYYY-MM-DD`
+
+Reconstructs the per-framework view as it was on that date. For each framework slug in the profile:
+
+```bash
+ASSERTION=<skill-root>/../nemawashi-analyze/assertion.sh
+DEF=<plugin-root>/skills/nemawashi-analyze/frameworks/<slug>.md
+JSONL=PROFILE_DIR/<name>/frameworks/<slug>.jsonl
+
+entry=$(bash "$ASSERTION" fold "$JSONL" --as-of YYYY-MM-DD)
+if [ -n "$entry" ]; then
+  bash "$ASSERTION" render "$entry" "$DEF"
+else
+  echo "<slug>: no analysis as of YYYY-MM-DD"
+fi
+```
+
+Render each framework's output in the same shape as the default `nemawashi-show <name>` view, then synthesize a brief banner noting the as-of date.
+
+If a framework's `.jsonl` does not exist (the profile predates #41 and migration `04-frameworks-temporal-model` has not run), fall back to reading `.md` directly and note the limitation in the output.
+
+### `nemawashi-show <name> <slug> --history`
+
+Prints the chronological assertion log for one framework. Useful for spotting when a classification changed.
+
+```bash
+ASSERTION=<skill-root>/../nemawashi-analyze/assertion.sh
+bash "$ASSERTION" history PROFILE_DIR/<name>/frameworks/<slug>.jsonl
+```
+
+Output is one line per assertion: `<asserted_at>: <classification> (<confidence>)`.
+
+For a diff between two specific dates, the user can compose `fold` + `render` themselves:
+
+```bash
+DATE_A=2026-03-01
+DATE_B=2026-05-01
+diff \
+  <(bash "$ASSERTION" render "$(bash "$ASSERTION" fold "$JSONL" --as-of $DATE_A)" "$DEF") \
+  <(bash "$ASSERTION" render "$(bash "$ASSERTION" fold "$JSONL" --as-of $DATE_B)" "$DEF")
+```
+
+A dedicated `nemawashi-diff` skill is on the roadmap (see the spec's "Open follow-ups") but out of scope for #41.
+
 ## Key Principles
 
 - **Read-only.** Never write or modify profile files. If the user wants to change something, route them to the appropriate skill.

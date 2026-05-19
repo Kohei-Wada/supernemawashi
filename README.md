@@ -52,6 +52,7 @@ All operational skills are verb-first under the `nemawashi-` prefix.
 | `nemawashi-show` | Read-only view of profiles — list all, show one person, drill into a single framework, or get the aggregated DO/DON'T rules by situation |
 | `nemawashi-discover` | Scans every adapter-supported source to find people you interact with but haven't profiled yet |
 | `nemawashi-check` | Dashboard showing which profiles are stale and need re-analysis |
+| `nemawashi-note` | Append a single observation to a profile from an off-MCP interaction (1:1, phone, hallway) — the channel for everything adapters can't see |
 | `nemawashi-reply` | Crafts 2-3 draft messages tailored to the recipient's psychological profile, loading only the framework files relevant to the current situation |
 | `nemawashi-migrate` | Upgrades legacy profile data to the current on-disk format. Self-discovering registry — drop a `.sh`/`.md` pair under `skills/nemawashi-migrate/migrations/` to add a new migration |
 | `using-supernemawashi` | Entry point — routes requests to the appropriate skill |

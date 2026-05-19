@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
-# 02-delete-legacy-facts-md.sh — Detect profiles where facts.md is now
+# 90-delete-legacy-facts-md.sh — Detect profiles where facts.md is now
 # redundant (i.e. facts.jsonl already exists alongside).
 #
-# This is the cleanup step that follows 01-facts-md-to-jsonl. Splitting it
-# from the convert step makes the destructive action (file deletion) opt-in
-# at the orchestrator level rather than baked into the converter. The
-# nemawashi-migrate skill chains them: after 01 produces facts.jsonl for a
-# profile, that profile becomes eligible for 02 in the next detect pass.
+# This is a cleanup-phase migration (filename prefix 90-99). It runs
+# AFTER all forward-phase migrations (01-89) have produced or extended
+# the canonical facts.jsonl, at which point the legacy facts.md can be
+# safely retired. Splitting destructive cleanup from forward conversion
+# means each migration is single-responsibility, and the filename
+# convention orders apply correctly within a single round.
 #
 # Usage:
-#   02-delete-legacy-facts-md.sh --detect   Print one line if N>0 profiles
+#   90-delete-legacy-facts-md.sh --detect   Print one line if N>0 profiles
 #                                            eligible; silent otherwise.
 
 set -uo pipefail
 
 PROFILE_DIR="${PROFILE_DIR:-$HOME/.local/share/supernemawashi/profiles}"
-MIGRATION_ID="02-delete-legacy-facts-md"
+MIGRATION_ID="90-delete-legacy-facts-md"
 
 mode=""
 for arg in "$@"; do

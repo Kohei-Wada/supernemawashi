@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
-# 03-merge-legacy-md-into-jsonl.sh — Detect profiles where the legacy
+# 02-merge-legacy-md-into-jsonl.sh — Detect profiles where the legacy
 # facts.md covers dates the new facts.jsonl does not.
 #
 # This is the "coverage gap" case: a profile has both files, but the
 # jsonl was produced by a `nemawashi-collect` run on a later date window,
 # so the md still holds earlier (or later) facts that aren't reflected
-# in the jsonl. 02-delete-legacy-facts-md correctly refuses to delete in
-# this state. 03 closes the gap by merging the missing md entries into
-# the jsonl; 02 then picks up the cleaned state on the next round.
+# in the jsonl. 90-delete-legacy-facts-md (cleanup phase) correctly
+# refuses to delete in this state. 02 closes the gap by merging the
+# missing md entries into the jsonl; 90 then picks up the cleaned state
+# in the same round.
 #
 # Usage:
-#   03-merge-legacy-md-into-jsonl.sh --detect
+#   02-merge-legacy-md-into-jsonl.sh --detect
 
 set -uo pipefail
 
 PROFILE_DIR="${PROFILE_DIR:-$HOME/.local/share/supernemawashi/profiles}"
-MIGRATION_ID="03-merge-legacy-md-into-jsonl"
+MIGRATION_ID="02-merge-legacy-md-into-jsonl"
 
 mode=""
 for arg in "$@"; do

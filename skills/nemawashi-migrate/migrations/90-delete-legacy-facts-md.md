@@ -1,13 +1,13 @@
 ---
-id: 02-delete-legacy-facts-md
-detect: 02-delete-legacy-facts-md.sh
+id: 90-delete-legacy-facts-md
+detect: 90-delete-legacy-facts-md.sh
 ---
 
 # Migration: Delete legacy facts.md
 
-After `01-facts-md-to-jsonl` produces `facts.jsonl`, the original `facts.md` is redundant — its content is also in the jsonl. This migration removes the redundant copy after re-verifying content fidelity.
+After the forward-phase migrations (`01-facts-md-to-jsonl` produces, `02-merge-legacy-md-into-jsonl` extends) have run, the original `facts.md` is redundant — its content is also in the jsonl. This cleanup-phase migration (filename prefix `90-99`) removes the redundant copy after re-verifying content fidelity.
 
-Splitting cleanup from convert makes the destructive action opt-in at the orchestrator level. A user who wants to keep `facts.md` for any reason can simply decline this migration when prompted.
+The filename convention guarantees this runs AFTER all forward-phase migrations (01-89) in a single round, so a profile that needs both `02-merge` and `90-delete` gets both applied in order without an extra detect round. Splitting cleanup from convert also makes the destructive action opt-in at the orchestrator level — a user who wants to keep `facts.md` for any reason can simply decline this migration when prompted.
 
 ## Source state
 
@@ -16,7 +16,7 @@ A profile is eligible when **both** files exist:
 - `<profile-dir>/facts.md`
 - `<profile-dir>/facts.jsonl`
 
-Detection is performed by `02-delete-legacy-facts-md.sh`.
+Detection is performed by `90-delete-legacy-facts-md.sh`.
 
 ## Apply, per eligible profile
 

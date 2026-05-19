@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
-# _lib.sh — shared helpers sourced by every migration script in this directory.
+# lib/migration.sh — shared helpers for migration scripts and the
+# `nemawashi-check` freshness scanner.
 #
-# Not a migration itself. The leading underscore + non-executable mode tell
-# the iterator (`detect.sh`) and any future tooling to skip this file.
-#
-# Sourcing convention:
-#
-#   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-#   . "$SCRIPT_DIR/_lib.sh"
+# Sourced from `skills/nemawashi-migrate/migrations/*.sh` and
+# `skills/nemawashi-check/check.sh`. Not executable on its own.
 #
 # Helpers:
 #   - PROFILE_DIR              — env-overridable path to the profile dir

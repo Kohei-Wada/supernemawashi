@@ -13,7 +13,7 @@
 
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "$SCRIPT_DIR/_lib.sh"
+. "$SCRIPT_DIR/../../../lib/migration.sh"
 
 is_eligible() {
   local dir="$1"

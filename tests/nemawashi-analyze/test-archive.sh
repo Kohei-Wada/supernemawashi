@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# test-archive.sh — self-contained test for archive.sh.
-# Run: bash skills/nemawashi-analyze/test-archive.sh
+# test-archive.sh — self-contained test for skills/nemawashi-analyze/archive.sh.
+# Run: bash tests/nemawashi-analyze/test-archive.sh
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ARCHIVE="$SCRIPT_DIR/archive.sh"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ARCHIVE="$REPO_ROOT/skills/nemawashi-analyze/archive.sh"
 [ -x "$ARCHIVE" ] || { echo "archive.sh not executable: $ARCHIVE" >&2; exit 1; }
 
 PASS=0

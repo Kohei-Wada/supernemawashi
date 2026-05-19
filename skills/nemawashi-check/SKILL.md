@@ -5,7 +5,7 @@ description: Use when user wants to check which profiles need re-analysis - scan
 
 # Profile Freshness
 
-Check analysis staleness across all profiles and triage which ones need re-analysis.
+Triage profiles along two axes — **analysis freshness** (is the recorded analysis old?) and **subject activity** (has the person been active recently?) — and offer re-analysis for the rows where it actually pays off.
 
 ## When to Use
 
@@ -14,60 +14,41 @@ Check analysis staleness across all profiles and triage which ones need re-analy
 
 ## Process
 
-### Step 1: Scan Profiles
+### Step 1: Run the helper script
 
-1. List all directories in `PROFILE_DIR/`
-2. For each profile directory, read `profile.md` and extract the `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` HTML comment.
-3. Count current fact entries across **both** files (newer profiles only have the jsonl, legacy profiles only have the md, profiles mid-migration have both):
-   - `facts.jsonl`: count non-empty lines (each line is one record).
-   - `facts.md`: count lines matching `^- \[[0-9]{4}-[0-9]{2}(-[0-9]{2})?\] \[` (both `[YYYY-MM-DD]` and `[YYYY-MM]` prefixes are valid).
-   - The sum is `current facts count`.
-4. Determine the **latest fact date** — the maximum date across:
-   - `facts.jsonl`: the `date` field of each record.
-   - `facts.md`: the leading `[YYYY-MM-DD]` or `[YYYY-MM]` prefix of each entry.
-   For month-precision dates, treat the date as the first day of that month for arithmetic.
-5. Record per profile: name, last analyzed date, analyzed facts count, current facts count, latest fact date, days since latest fact (= **inactivity days**).
+Invoke `scripts/nemawashi-check.sh` (relative to the plugin root — the file lives alongside this skill in the same plugin). No arguments needed; it defaults to `~/.local/share/supernemawashi/profiles`.
 
-If a profile has no `<!-- analyzed: -->` comment, the analysis status is "Never Analyzed". If a profile has no fact data at all, the activity status is "Unknown".
+The script is the **single source of truth** for classification. Do not re-derive `analysis_status` or `activity_status` from raw file contents in this skill — the script already merges facts.jsonl + facts.md, handles month-precision dates, and computes the inactivity window. Keeping the logic in one place prevents drift between the bash and the prose.
 
-`scripts/nemawashi-check.sh` produces all of the above as a TSV — invoking it is the fastest way to gather Step 1 data deterministically.
+The script emits a TSV with these columns (one row per profile, plus a header):
 
-### Step 2: Classify
+| Column | Meaning |
+|---|---|
+| `name` | Profile directory name |
+| `analyzed_date` | Last analysis date or `never` |
+| `days_ago` | Days since analysis (or `-` if never) |
+| `analyzed_facts` | facts_count recorded at last analysis |
+| `current_facts` | Current fact count across facts.jsonl + facts.md |
+| `latest_fact_date` | Most recent fact date or `-` |
+| `inactivity_days` | Days since the latest fact (or `-`) |
+| `analysis_status` | `never_analyzed` / `stale` / `fresh` / `no_data` |
+| `activity_status` | `active` (<30d) / `inactive` (30-90d) / `dormant` (>90d) / `unknown` |
 
-Each profile gets **two independent classifications** — one for analysis freshness, one for subject activity. Different combinations imply different actions.
+Thresholds (7 / 30 / 90 days) are constants near the top of the script — tune them there, not in this prose.
 
-**Analysis status:**
+### Step 2: Render the Dashboard
 
-| Status | Criteria |
-|--------|----------|
-| Never Analyzed | No `<!-- analyzed: -->` comment in profile.md |
-| Stale | Last analyzed > 7 days ago OR current facts count > analyzed facts count |
-| Fresh | Last analyzed within 7 days AND no new facts |
-| No Data | profile.md exists but neither facts.jsonl nor facts.md is present |
+Group rows by the action implied by combining `analysis_status` and `activity_status`. Suppress empty sections.
 
-**Subject activity** (based on inactivity days — how long since the most recent fact):
+| Section | Rows that match |
+|---|---|
+| **Needs Re-analysis** (active subjects) | `analysis_status ∈ {stale, never_analyzed}` AND `activity_status == active` |
+| **Inactive Subjects** | `activity_status == inactive` (any analysis status) |
+| **Archive Candidates** | `activity_status == dormant` (any analysis status) |
+| **Up to Date** | `analysis_status == fresh` AND `activity_status == active` |
+| **No Data** | `analysis_status == no_data` — suggest `nemawashi-collect` first |
 
-| Status | Criteria |
-|--------|----------|
-| Active | Latest fact within 30 days |
-| Inactive | Latest fact 30–90 days old |
-| Dormant | Latest fact older than 90 days |
-| Unknown | No fact data at all |
-
-**Action matrix** — combine the two axes:
-
-| Analysis ↓ \ Activity → | Active | Inactive | Dormant |
-|---|---|---|---|
-| Fresh | (skip) | (skip) | Archive Candidate |
-| Stale | **Re-analyze** | Review | Archive Candidate |
-| Never Analyzed | **Analyze** | Review | Archive Candidate |
-| No Data | run nemawashi-collect first | — | — |
-
-The thresholds (7 / 30 / 90 days) match the bash helper's defaults; tune them in `scripts/nemawashi-check.sh` if the workflow needs different cadences.
-
-### Step 3: Present Dashboard
-
-Group profiles by the action implied by the matrix above. Suppress empty sections.
+Render as:
 
 ```markdown
 ## Profile Freshness Dashboard
@@ -76,7 +57,6 @@ Group profiles by the action implied by the matrix above. Suppress empty section
 | Profile | Last Analyzed | Days Ago | Facts (analyzed → current) | Latest Fact | Reason |
 |---------|--------------|----------|---------------------------|-------------|--------|
 | john | 2026-03-15 | 13 | 8 → 15 | 2026-05-18 (1d) | Stale + new facts |
-| alice | never | — | 0 → 6 | 2026-05-12 (7d) | Never analyzed |
 
 ### Inactive Subjects (30–90d since latest fact)
 | Profile | Last Analyzed | Latest Fact | Days Idle | Suggestion |
@@ -93,32 +73,48 @@ Group profiles by the action implied by the matrix above. Suppress empty section
 |---------|--------------|-------------|-------|
 | carol | 2026-05-18 | 2026-05-19 (0d) | 12 |
 
-Summary: 2 re-analyze · 1 review · 1 archive candidate · 1 up to date
+Summary: 1 re-analyze · 1 review · 1 archive candidate · 1 up to date
 ```
 
-After the dashboard, prompt only for action on the **Needs Re-analysis** rows:
+Prompt **only for the Needs Re-analysis rows**:
 
 > "Re-analyze the active-subject stale profiles? (e.g., 'yes' for all, 'john only', or 'no')"
 
-For Inactive / Archive Candidate rows, do **not** suggest re-analysis by default — the right next step is usually a human "is this person still relevant?" decision, not more compute. Surface the rows; let the user act.
+For Inactive / Archive Candidate rows, surface them but **do not** auto-suggest re-analysis — the right next step is a human "is this person still relevant?" decision, not more compute.
 
-### Step 4: Re-analyze (Optional)
+### Step 3: Re-analyze (optional)
 
-If the user selects profiles from the Needs Re-analysis section, dispatch parallel agents — one per profile — each invoking `nemawashi-analyze`. nemawashi-analyze is local-file-only (no MCP calls), so parallelism is unconstrained.
+If the user opts in, dispatch one parallel subagent per selected profile. Use the following **uniform prompt template** — substitute `${name}` and `${today}` per row, and reuse the rest verbatim. The template exists because earlier ad-hoc dispatches produced wildly inconsistent return shapes (3-line vs. 30-line summaries) — pinning the format here makes the aggregated output usable.
 
-After all agents return, show an updated dashboard summary.
+```
+Re-analyze the supernemawashi profile for "${name}".
+
+Today: ${today}
+Profile path: ~/.local/share/supernemawashi/profiles/${name}/
+
+Invoke the `supernemawashi:nemawashi-analyze` skill on this profile end-to-end (Steps 1-7 of that skill). It reads profile.md, facts.jsonl, facts.md, and relationship.md, then rewrites profile.md / contradictions.md with refreshed framework classifications and DO/DON'T rules.
+
+When done, return ONLY a one-line summary in this exact shape:
+
+${name}: <core pattern in one sentence> | DO: <single top rule> | DON'T: <single top rule> | contradictions: <count or "none">
+
+No framework details, no evidence quotes, no process narration. One line only.
+```
+
+`nemawashi-analyze` is local-file-only (no MCP calls), so parallelism is unconstrained — fan out across all selected profiles at once.
+
+After all subagents return, summarize as a short table (one row per re-analyzed profile, columns matching the one-line shape above) and re-run `scripts/nemawashi-check.sh` to confirm the updated freshness state.
 
 ## Edge Cases
 
-- **No profiles exist**: Report that no profiles were found. Suggest running nemawashi-collect or nemawashi-discover first.
-- **All profiles fresh AND active**: Report that everything is up to date. No action needed.
-- **Profile has profile.md but neither facts.jsonl nor facts.md**: Mark as "No data collected — run nemawashi-collect first." Do not suggest re-analysis.
-- **Analyzed comment exists but is malformed**: Treat as "Never Analyzed" and note the parsing issue.
-- **Latest fact in the future** (clock skew, mislabeled entry): inactivity days will be negative. Treat as Active and surface the anomaly to the user — don't try to "fix" the data.
+- **No profiles exist**: Report and suggest `nemawashi-collect` or `nemawashi-discover`.
+- **Script not found** (rare — only if the plugin install is partial): fall back to running the equivalent classification in the LLM, but warn the user that the source-of-truth helper is missing.
+- **`activity_status == unknown`** (no facts at all): same row treatment as Inactive — surface for human review, do not auto-re-analyze.
+- **Latest fact dated in the future** (clock skew, mistagged entry): `inactivity_days` will be negative. The script still classifies as Active. Surface the anomaly to the user; don't try to "fix" it.
 
 ## Key Principles
 
-- **Read-only by default** — This skill only reads and reports. Re-analysis happens only when the user explicitly requests it.
-- **Actionable output** — The dashboard should make it immediately clear what needs attention and why.
-- **Two axes, not one** — Analysis staleness and subject inactivity are independent signals with different remediations. Don't conflate them; a Dormant subject doesn't need re-analysis even if their analysis is old.
-- **Parallel re-analysis** — When the user opts in, dispatch one agent per stale **and active** profile in parallel. Don't auto-batch Inactive or Dormant rows.
+- **Script is canonical** — classification logic lives in `scripts/nemawashi-check.sh`. This skill renders and orchestrates; it does not reclassify.
+- **Two axes, not one** — analysis staleness and subject inactivity are independent signals with different remediations. A Dormant subject doesn't need re-analysis even if its analysis is old.
+- **Parallel re-analysis** — when the user opts in, dispatch one agent per Needs Re-analysis row in parallel using the template above. Don't auto-batch Inactive or Dormant rows.
+- **Uniform dispatch prompts** — never improvise per-row prompts when bulk re-analyzing; the template is the contract that keeps subagent reports aggregable.

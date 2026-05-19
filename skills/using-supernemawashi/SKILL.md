@@ -20,6 +20,7 @@ All skills are verb-first under the `nemawashi-` prefix.
 | `supernemawashi:nemawashi-check` | User wants to check which profiles are stale or need re-analysis |
 | `supernemawashi:nemawashi-note` | User wants to manually record one observation about a person — typically from an off-MCP interaction (1:1, phone, hallway) that adapters can't see |
 | `supernemawashi:nemawashi-reply` | User needs help replying to someone or deciding what to say |
+| `supernemawashi:nemawashi-issue` | User wants to file a GitHub issue against this repo from feedback or an idea surfaced in conversation |
 
 Updating a profile is normally a 2-step pipeline: **nemawashi-collect** (pull from MCP sources — slow, rate-limited) → **nemawashi-analyze** (local-only — fast). They are kept as separate skills so re-analysis without re-collection is cheap.
 
@@ -51,6 +52,9 @@ When the request is ambiguous, use this decision tree:
 
 "how should I reply to X?" / "what should I say?"
   → nemawashi-reply
+
+"issue にしといて" / "FB として残しといて" / "this should be an issue" / "file that"
+  → nemawashi-issue (drafts a house-style body, confirms, files via gh)
 ```
 
 **Key disambiguations:**

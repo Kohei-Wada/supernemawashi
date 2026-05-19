@@ -35,3 +35,9 @@ repos:
         language: script
         pass_filenames: false
         files: '^skills/.*/SKILL\.md$'
+
+      - id: check-no-internal-names
+        name: scan staged additions against the local denylist
+        entry: scripts/check-no-internal-names.sh
+        language: script
+        pass_filenames: false

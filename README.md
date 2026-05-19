@@ -77,9 +77,12 @@ All data is stored locally at `~/.local/share/supernemawashi/profiles/<person-na
 ```
 profile.md          # Basic info + psychological analysis + communication strategy
 relationship.md     # Your relationship context and approach strategies
-facts.md            # Chronological record of observed behaviors with sources
+facts.jsonl         # Chronological record of observed behaviors (newer profiles)
+facts.md            # Same record in legacy format (older profiles)
 contradictions.md   # Detected inconsistencies (useful for difficult conversations)
 ```
+
+Consumers read both `facts.jsonl` and `facts.md` if both exist (dual-read transition). The canonical JSONL schema is at [`skills/nemawashi-collect/FACTS-SCHEMA.md`](skills/nemawashi-collect/FACTS-SCHEMA.md).
 
 ## Philosophy
 
@@ -96,6 +99,24 @@ contradictions.md   # Detected inconsistencies (useful for difficult conversatio
 ## Contributing
 
 Issues and PRs welcome at [github.com/Kohei-Wada/supernemawashi](https://github.com/Kohei-Wada/supernemawashi).
+
+### Optional: local denylist for internal identifiers
+
+If you author skills or examples that touch on private context (your colleagues' names, internal project / customer / channel names, etc.), it is easy to slip one of those into an example block by accident. A pre-commit hook scans staged additions against a per-user denylist and blocks the commit on a match.
+
+The denylist itself stays out of the repo — it lives at `.local/denylist.txt`, which is gitignored. To opt in:
+
+```sh
+mkdir -p .local
+cat > .local/denylist.txt <<'EOF'
+# One term per line. Blank lines and lines starting with # are ignored.
+# Matching is case-insensitive.
+acme-internal-project
+my-colleague-last-name
+EOF
+```
+
+With pre-commit installed (`pip install pre-commit && pre-commit install`), staging a `+` line that matches any term will fail the commit and print which terms matched. If the denylist file is absent the hook is a silent no-op, so contributors who haven't opted in are not blocked.
 
 ## License
 

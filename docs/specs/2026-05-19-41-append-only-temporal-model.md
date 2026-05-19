@@ -176,9 +176,9 @@ Per profile, for each `frameworks/<slug>.md` that already exists:
 2. Construct one assertion with `asserted_at = <last_updated>T00:00:00Z` (use the documented date, not migration time).
 3. Write that one entry to `frameworks/<slug>.jsonl`.
 4. Leave the .md as-is (it's now the cached current view, byte-for-byte identical).
-5. If `frameworks/_archive/<slug>.<date>.md` files exist (from #40): convert each to an assertion with `asserted_at = <date>T00:00:00Z` and prepend (in chronological order) to the .jsonl. Then delete the `_archive/` directory.
+5. Delete `frameworks/_archive/` and the top-level `<name>/_archive/` directories entirely. **Prior versions held there are discarded.**
 
-Per profile, also at the profile level: `_archive/profile.<date>.md` (from #40) is **not** restored — Core Pattern is derived and doesn't get the temporal treatment.
+The temporal-model log starts at the current state — older analyses preserved in `_archive/` by #40 are intentionally not backfilled. Rationale: the `_archive/` data is incomplete (only profiles re-analyzed since #40 landed have any), the dates are coarse (one entry per analyze run, no intermediate state), and the cost of writing a parser for the archived markdown is not paid back by what we'd recover. Start the log from "now" and accept that history before #41 lands is lost.
 
 **Migration registration:** add `04-frameworks-temporal-model` under `skills/nemawashi-migrate/migrations/`. Detection: `frameworks/<slug>.md` exists AND `frameworks/<slug>.jsonl` does NOT exist.
 

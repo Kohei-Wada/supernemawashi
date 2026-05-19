@@ -26,7 +26,8 @@ Every dispatch includes the following in the prompt:
 - `framework_definition_path` — absolute path to the framework definition under `skills/nemawashi-analyze/frameworks/<slug>.md`
 - `profile_dir` — absolute path to `PROFILE_DIR/<name>/`
 - `output_path` — absolute path to `PROFILE_DIR/<name>/frameworks/<slug>.md`
-- `today` — YYYY-MM-DD (use as `last_updated` value)
+- `assertion_sh` — absolute path to `skills/nemawashi-analyze/assertion.sh`
+- `today` — YYYY-MM-DD (use to derive `asserted_at` and `last_updated`)
 - `tier` (optional, derivable from frontmatter) — if omitted, read from the framework definition's `tier:` field
 
 ## What you do
@@ -41,53 +42,48 @@ Every dispatch includes the following in the prompt:
    - 1-2 signals → `Hypothesis`
    - 0 signals → `Data Gap`
 7. **Generate rules** for the four situation categories: `When Requesting`, `During Conflict`, `When Reporting`, `Routine Collaboration`. Each rule cites a signal tag and brief reasoning. Rules from Hypothesis classifications are tagged `(hypothesis)`. If no rule applies for a situation, write `- (no framework-specific rule for this situation)` rather than fabricate.
-8. **Write** the output file atomically (temp file in the same dir, then `mv`) on **every** dispatch. Do NOT skip the write based on existing file content, `last_updated` date, or perceived currency. Idempotence is the parent's responsibility — if a profile didn't need re-analysis, the parent shouldn't have dispatched (see [Why always regenerate](#why-always-regenerate) below).
+8. **Construct the assertion as a JSON object** with this shape:
 
-```markdown
----
-framework: <framework_slug>
-classification: <one-line classification text>
-confidence: Confirmed | Hypothesis | Data Gap
-last_updated: <today>
----
+   ```json
+   {
+     "asserted_at": "<today as ISO-8601 UTC, second precision — e.g. 2026-05-19T09:53:39Z>",
+     "framework": "<framework_slug>",
+     "classification": "<one-line classification text>",
+     "classification_detail": "<1-3 sentences expanding the classification>",
+     "confidence": "Confirmed | Hypothesis | Data Gap",
+     "facts_snapshot_count": <integer: count of facts in facts.jsonl you analyzed against>,
+     "evidence": [
+       {
+         "date": "YYYY-MM-DD",
+         "source": "<slack|gmail|calendar|github|manual|...>",
+         "quote": "<verbatim quote or paraphrased observation>",
+         "signal_tag": "<framework>:<tag>",
+         "reasoning": "<short explanation of why this evidence supports the classification>"
+       }
+     ],
+     "rules": {
+       "requesting": {
+         "do":   [{"text": "<rule>", "signal_tag": "<framework>:<tag>"}],
+         "dont": [{"text": "<rule>", "signal_tag": "<framework>:<tag>"}]
+       },
+       "conflict":  { "do": [...], "dont": [...] },
+       "reporting": { "do": [...], "dont": [...] },
+       "routine":   { "do": [...], "dont": [...] }
+     },
+     "data_gap_reason": null
+   }
+   ```
 
-# <output_label from framework definition>
+   For **Data Gap** results: `evidence` may be empty; each `rules.<situation>.do` and `.dont` is `[]`; `data_gap_reason` is a string explaining why insufficient evidence.
 
-## Classification
-<1-3 sentences expanding the one-line classification.>
+9. **Append + render** via `<assertion_sh>` (passed in your dispatch prompt):
 
-## Evidence
-- [YYYY-MM-DD] [source] <fact citation> → <signal explanation> [signal: <tag>]
-- ...
+   - Save the JSON to a temp file: `tmp=$(mktemp /tmp/<framework_slug>.assertion.XXXXXX.json); cat > "$tmp" <<JSON ... JSON`
+   - Append:  `bash "$assertion_sh" append "<profile_dir>/frameworks/<framework_slug>.jsonl" "$(cat "$tmp")"`
+   - Render:  `bash "$assertion_sh" render-to-file "<profile_dir>/frameworks/<framework_slug>.jsonl" "<output_path>" "<framework_definition_path>"`
+   - Clean up the temp: `rm -f "$tmp"`
 
-## Rules
-
-### When Requesting
-**DO:**
-- <Action> — <reasoning> [signal: <tag>]
-
-**DON'T:**
-- <Action> — <reasoning> [signal: <tag>]
-
-### During Conflict
-**DO:** ...
-**DON'T:** ...
-
-### When Reporting
-**DO:** ...
-**DON'T:** ...
-
-### Routine Collaboration
-**DO:** ...
-**DON'T:** ...
-```
-
-Data Gap variant — omit the `## Rules` section, add:
-
-```markdown
-## Data Gap
-<Why insufficient evidence + what would be needed to classify.>
-```
+   The `.jsonl` is the source of truth; the `.md` is the derived snapshot regenerated from the latest assertion. Both writes are your responsibility on every dispatch (no conditional skip — see [Why always regenerate](#why-always-regenerate) below).
 
 ## Output
 
@@ -109,11 +105,11 @@ No additional narration. The parent collects the one-line summaries into the syn
 
 ## Constraints
 
-- **Never write outside `<output_path>`.** Atomic write (temp + `mv`) on every dispatch — no conditional skip.
+- **You write two files for your slug:** `<output_path>` (the .md) and its `.jsonl` sibling. Never write any other file.
+- **Append is the source of truth.** If `render-to-file` fails after `append` succeeds, the next analyze pass for this slug will regenerate the .md from the latest entry — do not retry render on its own.
 - **Never modify `profile.md`, `contradictions.md`, or other framework files.** Those are the parent's responsibility during the synthesis pass.
 - **Multi-framework rules**: if a rule cites a primary + secondary framework, you only write the rule when this framework IS the primary. Otherwise omit and let the other framework's analyzer write it. The secondary framework appears in your rule's bracket annotation, not as a separate rule.
 - **Non-judgmental framing.** Describe behaviors and patterns, not character.
-- **Orchestrator pre-archives the previous output.** Before dispatching you, `nemawashi-analyze` moves any pre-existing `<output_path>` to `<dir>/_archive/<stem>.<date>.<ext>`. You always write into a clean target. Do NOT invoke the archive step yourself.
 
 ## Why always regenerate
 

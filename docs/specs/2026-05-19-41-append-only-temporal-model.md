@@ -68,6 +68,7 @@ One JSON object per line in `frameworks/<slug>.jsonl`. No prologue, no comments 
   "asserted_at": "2026-05-19T09:53:39Z",
   "framework": "thomas-kilmann-tki",
   "classification": "Collaborating primary, Competing when defending priorities/pace",
+  "classification_detail": "Default mode is Collaborating: builds on others' input, proposes alternatives, and asks clarifying questions to co-construct solutions. Shifts to Competing when his priorities or work pace are threatened — sets firm boundaries with direct, assertive language to protect focus.",
   "confidence": "Confirmed",
   "facts_snapshot_count": 7,
   "evidence": [
@@ -103,6 +104,7 @@ One JSON object per line in `frameworks/<slug>.jsonl`. No prologue, no comments 
 | `asserted_at` | ISO-8601 timestamp (UTC, second precision) | yes | When this assertion was written. Acts as the entry's identity. Sort key for the log. |
 | `framework` | string | yes | Framework slug. Redundant with the filename but enables `grep -h '"framework":"tki"' frameworks/*.jsonl` across profiles. |
 | `classification` | string | yes | One-line classification text. Matches the current `classification:` frontmatter field in `<slug>.md`. |
+| `classification_detail` | string | yes | 1-3 sentence expansion of the classification — the prose that appears under `## Classification` in the .md body today. |
 | `confidence` | enum: `Confirmed`/`Hypothesis`/`Data Gap` | yes | Same enum as today. |
 | `facts_snapshot_count` | integer | yes | How many facts were in `facts.jsonl` when this assertion was written. Useful for "this analysis was based on N facts" diagnostics. |
 | `evidence` | array of `{date, source, quote, signal_tag, reasoning}` | yes (may be empty for Data Gap) | Self-contained — no foreign key into facts.jsonl. Mirrors today's `## Evidence` bullets. |

@@ -36,11 +36,30 @@ Signals worth capturing:
 ## Discovery Recipe
 Used by nemawashi-discover to find unprofiled people the user interacts with.
 
+### Pre-Check (solo-repo detection)
+
+Many users work mostly on solo repos where reviewers are dominated by bots (dependabot, github-actions, copilot, amazon-q-developer, renovate, etc.). For them, the full recipe spends ~100s of wall-clock time fetching per-PR review data only to filter everything out as bots. Run this cheap probe first and abort early when that is the case.
+
+1. List the operator's recent PRs:
+   - `gh search prs --author "@me" --updated ">=YYYY-MM-DD" --limit 20 --json number,repository`
+2. Sample 3-5 of the returned PRs and fetch their reviewers:
+   - `gh pr view <owner>/<repo>#<num> --json reviews`
+3. Classify each reviewer login as bot or human. A login counts as a bot if it ends in `[bot]` or matches the known list: `dependabot`, `github-actions`, `copilot`, `amazon-q-developer`, `renovate`.
+4. **Abort the adapter and return an empty list if either:**
+   - ≥ 90 % of the sampled reviewers are bots, OR
+   - none of the sampled PRs have any reviewers at all.
+
+   In the final report to nemawashi-discover, note: "GitHub: no human collaborators detected, adapter skipped (probe-based)."
+
+The pre-check is intentionally inline (no cached marker) — 4-6 API calls per discover run, negligible compared to the full recipe it gates. A persistent skip-marker with expiry is tracked as a follow-up.
+
+### Full Recipe
+
 1. List the user's recent PRs / reviews / issue comments across their org/repos within the scan window (default 14 days).
    - `gh search prs --author @me --updated ">=YYYY-MM-DD" --limit 50`
    - `gh search prs --reviewed-by @me --updated ">=YYYY-MM-DD" --limit 50`
 2. Extract co-authors, reviewers, and commenters from those PRs/issues.
-3. Exclude the user themselves and bots (dependabot, copilot, CI bots).
+3. Exclude the user themselves and bots, using the same bot-classification rule as the Pre-Check (logins ending in `[bot]` plus the known list above).
 4. Count interactions per login.
 5. Return a list of `{github_login, display_name, interaction_count}` records.
 

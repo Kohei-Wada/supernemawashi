@@ -18,11 +18,15 @@ Captures real-time communication style: response patterns, tone shifts by audien
 If any of the above is unavailable, skip this adapter.
 
 ## Collection Recipe
-1. Resolve the target's Slack user ID (search by display name or email).
+
+**Shape: author-search.** The target is known by name, so query directly for their messages instead of walking channels. Author-search returns permalinks with channel and timestamp metadata already attached, so a separate channel-sampling pass is unnecessary in the common case. (For the inverse case — target unknown — see the Discovery Recipe below, which is built around channel-walking.)
+
+1. Resolve the target's Slack handle (search by display name or email if not already known).
 2. Fetch their profile (`slack_read_user_profile`) for title, status, team.
-3. Search messages authored by or mentioning the target (`slack_search_public_and_private`). Default window: last 30-90 days.
-4. For high-signal hits, read the surrounding thread (`slack_read_thread`) to capture context.
-5. Identify the top 3-5 channels they are active in; sample recent activity (`slack_read_channel`).
+3. **Author-search for messages they wrote.** Call `slack_search_public_and_private` with the query `from:<handle>` over the default window (last 30-90 days). Each hit includes the permalink, channel, and timestamp — no separate channel-walk is needed to attribute the message.
+4. **Optional: search for messages mentioning them.** Query `to:<handle>` for direct mentions, or `<handle>` (no modifier) for any reference. Use sparingly — both can return high volume on common handles, and the value tapers off quickly after the top hits.
+5. For high-signal hits from step 3 or 4, read the surrounding thread (`slack_read_thread`) to capture context.
+6. **Fallback (rare):** if author-search returns fewer than ~5 hits across the window, the target may be active in private channels not indexed by search, or the handle may be misresolved. In that case, sample the top 3-5 channels the target is known to participate in (`slack_read_channel`). Skip this step when author-search already yielded sufficient signal.
 
 ## Fact Extraction
 Record observable behaviors only — what they said, how they replied, who they tagged. Do not infer psychology (that is nemawashi-analyze's job).
@@ -43,6 +47,8 @@ Permalinks come from the message metadata. Omit the URL only if it cannot be con
 
 ## Discovery Recipe
 Used by nemawashi-discover to find unprofiled people the user interacts with.
+
+**Shape: channel-walking.** The target set is unknown, so we have to sample the user's surface area (their channels) and extract who appears in it. This is the inverse of the Collection Recipe — use channel-walking when the target is unknown, author-search when it is known.
 
 1. List the channels the user is a member of, filtered to those with activity in the scan window (default 14 days).
 2. For each channel, read recent messages (`slack_read_channel`).

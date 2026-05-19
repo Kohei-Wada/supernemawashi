@@ -104,14 +104,22 @@ After applying all selected migrations:
 
 ## Parallel application
 
-When a migration applies to many profiles, dispatch one subagent per profile to run the Apply section in parallel — they are independent. Use a uniform prompt template that includes:
+When a migration applies to many profiles, dispatch the `migration-applier` agent (defined at `agents/migration-applier.md`) once per profile, in parallel. The agent's contract — input parameters, apply protocol, output shape — lives in `agents/migration-applier.md`; do not duplicate it here.
 
-- The migration's `<id>.md` content (the full apply contract).
-- The target profile name and its `PROFILE_DIR/<name>/` path.
-- Today's date.
-- The expected per-profile report shape (see the markdown).
+#### Dispatch prompt per agent
 
-This keeps wall-clock proportional to the slowest profile rather than the sum.
+```
+migration_id:        <id> (e.g. 03-frameworks-split)
+migration_md_path:   <absolute path to skills/nemawashi-migrate/migrations/<id>.md>
+profile_name:        <slug>
+profile_dir:         PROFILE_DIR/<slug>/
+today:               YYYY-MM-DD
+report_shape:        <copy the migration markdown's "Per-profile report" template verbatim>
+```
+
+Issue all N dispatches in a single message (parallel). The agent returns the per-profile report in the shape the migration markdown specifies. Wall-clock is bounded by the slowest profile rather than the sum.
+
+Migrations that internally fan out further (e.g. `03-frameworks-split` dispatches 6 `framework-analyzer` sub-agents per profile) keep that nested dispatch inside `migration-applier`; the top-level migrate skill only sees one report per profile.
 
 ## Idempotency and safety
 

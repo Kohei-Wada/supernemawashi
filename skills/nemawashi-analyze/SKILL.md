@@ -34,91 +34,21 @@ If both `facts.jsonl` and `facts.md` exist, both are read and merged (sort by da
 
 Also enumerate the framework definition files: every `*.md` under `frameworks/` (relative to this skill).
 
-### Step 2: Dispatch one agent per framework
+### Step 2: Dispatch one framework-analyzer agent per framework
 
-For each framework file, dispatch a subagent (general-purpose) with the prompt template below. The agents run in **parallel** — they share no state and write to disjoint output files.
+For each framework definition file, dispatch the `framework-analyzer` agent (defined at `agents/framework-analyzer.md`) in parallel. Each agent runs in an isolated context, reads its framework definition + the profile inputs, and writes one `PROFILE_DIR/<name>/frameworks/<slug>.md` file. The agent's full contract — input parameters, apply steps, output schema, return shape — lives in `agents/framework-analyzer.md`; do not duplicate it here.
 
-#### Agent prompt template
+#### Dispatch prompt per agent
 
 ```
-You are analyzing one psychological framework for a single person.
-
-Framework definition file: <ABSOLUTE_PATH_TO_FRAMEWORK_DEF>
-Profile directory:         PROFILE_DIR/<name>/
-Output file:               PROFILE_DIR/<name>/frameworks/<slug>.md
-Today's date:              YYYY-MM-DD
-
-Read these inputs:
-- The framework definition file above (Reference Table, Signal Tags, Classification Guidance, Rule Generation, tier).
-- facts.jsonl in the profile dir (one JSON record per line; schema at skills/nemawashi-collect/FACTS-SCHEMA.md). Read facts.md if it also exists.
-- relationship.md in the profile dir if it exists.
-
-Steps:
-
-1. Behavioral signal extraction. Scan each fact entry. Tag every relevant signal with this framework's Signal Tags. Skip facts that surface no signal for this framework.
-
-2. Tier check. Read the framework's `tier` frontmatter. If tier 2 and fewer than 2 signals were found, emit a Data Gap result (see Output) and stop.
-
-3. Classification. Aggregate signals per the framework's Classification Guidance. Pick the dominant pattern (or patterns if the framework supports multiple, e.g. TKI mode-with-context).
-
-4. Confidence assignment.
-   - 3+ signals → Confirmed
-   - 1-2 signals → Hypothesis
-   - 0 signals → Data Gap
-
-5. Rule generation. For the four situation categories (When Requesting, During Conflict, When Reporting, Routine Collaboration), derive DO/DON'T rules per the framework's Rule Generation section. Each rule must cite a signal tag and brief reasoning. Rules from Hypothesis classifications are tagged `(hypothesis)`. If no rule is applicable for a situation, write `- (no framework-specific rule for this situation)` rather than fabricating one.
-
-Output (atomic write to PROFILE_DIR/<name>/frameworks/<slug>.md):
-
----
-framework: <slug>
-classification: <one-line classification text>
-confidence: Confirmed | Hypothesis | Data Gap
-last_updated: YYYY-MM-DD
----
-
-# <Framework display name>
-
-## Classification
-<1-3 sentences explaining the classification.>
-
-## Evidence
-- [YYYY-MM-DD] <fact citation> → <signal explanation> [signal: <tag>]
-- ...
-
-## Rules
-
-### When Requesting
-**DO:**
-- <Action> — <reasoning> [signal: <tag>]
-
-**DON'T:**
-- <Action> — <reasoning> [signal: <tag>]
-
-### During Conflict
-**DO:** ...
-**DON'T:** ...
-
-### When Reporting
-**DO:** ...
-**DON'T:** ...
-
-### Routine Collaboration
-**DO:** ...
-**DON'T:** ...
-
-If the classification is Data Gap, omit the Rules section entirely and add a "## Data Gap" section explaining what evidence would be needed.
-
-Return one line to the orchestrator in this exact shape:
-
-<slug>: <classification text> (Confidence)
-
-Examples:
-  defense-mechanisms: Information withholding + Intellectualization (Confirmed)
-  attachment-style: Data Gap
+framework_slug:              <slug>
+framework_definition_path:   <absolute path to skills/nemawashi-analyze/frameworks/<slug>.md>
+profile_dir:                 PROFILE_DIR/<name>/
+output_path:                 PROFILE_DIR/<name>/frameworks/<slug>.md
+today:                       YYYY-MM-DD
 ```
 
-The orchestrator collects the one-line summaries; the full content lives in each `frameworks/<slug>.md` file.
+Issue all 6 dispatches in a single message (parallel). Each agent returns ONE line: `<slug>: <classification text> (<Confidence>)`. The orchestrator collects the lines; full content lives in each `frameworks/<slug>.md` file.
 
 ### Step 3: Wait for all agents, then synthesize
 

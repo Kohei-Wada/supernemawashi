@@ -48,6 +48,21 @@ Used by nemawashi-discover to find unprofiled people the user interacts with.
 4. Count thread participation per person.
 5. Return a list of `{email, display_name, thread_count}` records.
 
+## Identity Resolution
+Used by the identity cache (`.identity.md`) to record the user's own Gmail identifiers once per refresh cycle.
+
+1. Inspect a recent thread the user authored — call `search_threads` with `from:me` filter, take the most recent hit.
+2. Read the thread (`get_thread`) and extract the `From:` address — this is the user's primary email.
+3. If multiple From addresses appear (personal + work aliases), record both; the user may switch between aliases.
+
+Output (written to the `## gmail` section of `.identity.md`):
+
+```
+- primary_email: <email>
+- work_email: <email if distinct from primary>
+- display_name: <display name from From: header>
+```
+
 ## Pitfalls
 - **Automated mail**: filter out newsletter / system / Calendar invite mail unless that is the signal you want.
 - **Thread context**: reply tone often depends on the previous message. Read the full thread before judging tone.

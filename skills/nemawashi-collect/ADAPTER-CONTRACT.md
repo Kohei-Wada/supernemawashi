@@ -29,13 +29,10 @@ If any required tool is unavailable in this session, skip this adapter.
 ## Discovery Recipe
 [Numbered steps for scanning the source to find unprofiled people the user interacts with — used by nemawashi-discover. Optional; omit when the source has no person-discovery shape.]
 
-## Identity Resolution
-[Numbered steps for resolving the USER's own identifiers in this source's namespace — used by the identity cache (`.identity.md`). Optional; omit when this adapter does not need the user's identifiers to function. Output is a key/value map written into the cache's section for this adapter slug. See `IDENTITY-SCHEMA.md` for the cache layout and lifecycle.]
-
 ## Pitfalls
 [Common gotchas, accounts to filter out, rate-limit considerations]
 ```
 
-**Required fields:** All sections above are mandatory **except `## Discovery Recipe`** and **`## Identity Resolution`**, which are optional. The `output_tag` value is the `source` field on every JSONL record this adapter writes to `facts.jsonl` (see `FACTS-SCHEMA.md`). For legacy `facts.md` files written before the schema, the same value appears inside `[...]` (e.g. `- [2026-03-27] [slack] ...`). The `identifiers` field tells the collector which subject fields the adapter can search by — the collector skips adapters whose identifiers it cannot resolve for the target.
+**Required fields:** All sections above are mandatory **except `## Discovery Recipe`**, which is optional. The `output_tag` value is the `source` field on every JSONL record this adapter writes to `facts.jsonl` (see `FACTS-SCHEMA.md`). For legacy `facts.md` files written before the schema, the same value appears inside `[...]` (e.g. `- [2026-03-27] [slack] ...`). The `identifiers` field tells the collector which subject fields the adapter can search by — the collector skips adapters whose identifiers it cannot resolve for the target.
 
 **Consumers:** The same adapter file is read by both `nemawashi-collect` (Collection Recipe) and `nemawashi-discover` (Discovery Recipe). Source-specific knowledge (MCP tools, identifiers, pitfalls) lives once, in one place.

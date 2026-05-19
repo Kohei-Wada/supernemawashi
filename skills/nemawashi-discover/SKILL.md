@@ -78,11 +78,11 @@ After the table, prompt:
 After the user has selected names:
 
 1. **Confirm** the handoff with the user: "Collect profiles for: alice, bob, carol — run `nemawashi-collect` now?" Treat selection alone as intent to proceed, but show the list so the user can adjust.
-2. **Invoke `nemawashi-collect`** with the selected names. The collect skill handles identity resolution (once), MCP filtering, and parallel `profile-collector` agent dispatch for the batch.
+2. **Invoke `nemawashi-collect`** with the selected names. The collect skill handles MCP-tool filtering and parallel `profile-collector` agent dispatch for the batch.
 3. **Summarize** whatever `nemawashi-collect` reports back; don't re-format or re-aggregate — that summary is already the collect skill's deliverable.
 4. **Suggest** `nemawashi-analyze` for the freshly collected profiles.
 
-Discover never reads `.identity.md`, never dispatches `profile-collector` directly, and never touches `PROFILE_DIR/<name>/`. Its writes are zero. Its job is finished once the list crosses the boundary into collect.
+Discover never dispatches `profile-collector` directly and never touches `PROFILE_DIR/<name>/`. Its writes are zero. Its job is finished once the list crosses the boundary into collect.
 
 ## Key Principles
 

@@ -18,7 +18,7 @@
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "$SCRIPT_DIR/../../lib/migration.sh"
+. "$SCRIPT_DIR/../../lib/facts.sh"
 
 PROFILES_DIR="${1:-$HOME/.local/share/supernemawashi/profiles}"
 TODAY=$(date +%Y-%m-%d)

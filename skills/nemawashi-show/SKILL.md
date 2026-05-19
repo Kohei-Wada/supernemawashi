@@ -33,17 +33,24 @@ Determine the operation from the user's phrasing:
 
 Section keywords (case-insensitive):
 
-| Keyword | File / Section |
-|---------|----------------|
+| Keyword | Target |
+|---------|--------|
 | `profile` / no keyword | `profile.md` (default) |
 | `relationship` / `関係` | `relationship.md` |
 | `facts` / `事実` | `facts.jsonl` + `facts.md` (merged, see below) |
 | `contradictions` / `矛盾` | `contradictions.md` |
-| `do/don't` / `strategy` / `戦略` | `## Communication Strategy` section of `profile.md` |
 | `basic` / `info` | `## Basic Info` section of `profile.md` |
 | `communication` / `話し方` | `## Communication Patterns` section of `profile.md` |
 | `work` / `仕事` | `## Work Patterns` section of `profile.md` |
-| `behavioral` / `frameworks` / `分析` | `## Behavioral Patterns` section of `profile.md` |
+| `core` / `pattern` / `synthesis` | `## Core Pattern` section of `profile.md` |
+| `summary` / `frameworks` / `分析` | `## Framework Summary` section of `profile.md` |
+| `defense` / `防衛` | `frameworks/defense-mechanisms.md` |
+| `tki` / `conflict-mode` / `競合` | `frameworks/thomas-kilmann-tki.md` |
+| `ta` / `ego` / `エゴ` | `frameworks/transactional-analysis-ta.md` |
+| `motivators` / `motivation` / `動機` | `frameworks/core-motivators.md` |
+| `biases` / `cognitive` / `バイアス` | `frameworks/cognitive-biases.md` |
+| `attachment` / `愛着` | `frameworks/attachment-style.md` |
+| `do/don't` / `strategy` / `rules` / `戦略` | Aggregated **Rules** section across all `frameworks/*.md`, grouped by situation category. See Aggregated rules view below. |
 
 ### Step 2: Resolve the Person (when applicable)
 
@@ -78,18 +85,41 @@ Section keywords (case-insensitive):
 
 1. Read `profile.md` and render it as-is. Do NOT summarize or paraphrase — the user wants to see the actual content.
 2. After `profile.md`, append a short footer:
-   > Also available: `<name> relationship`, `<name> facts`, `<name> contradictions`.
+   > Also available: `<name> relationship`, `<name> facts`, `<name> contradictions`, `<name> do/don't`, `<name> <framework-slug>`.
 3. If `profile.md` is missing but fact data exists (`facts.jsonl` and/or `facts.md`), render the facts using the same merged view as the section operation below, and note "No analyzed profile yet — run `nemawashi-analyze` for <name>."
 
 #### Section operation
 
-1. If the section maps to a single file (`relationship.md` / `contradictions.md`): render the whole file.
+1. If the section maps to a single file (`relationship.md` / `contradictions.md` / `frameworks/<slug>.md`): render the whole file. For framework files, also print a one-line footer pointing back: `Summary in profile.md → ## Framework Summary`.
 2. If the section is `facts`: read both `facts.jsonl` (if present) and `facts.md` (if present) and render a merged chronological view:
    - For each `facts.jsonl` record, format as: `- [YYYY-MM-DD] [<source>] <content> (<url>)` — omit the URL block if absent. Channel/repository/meeting_title go in parentheses after content when present.
    - For each `facts.md` line, render as-is (already in markdown bullet form).
    - Sort the merged list by date descending.
 3. If the section maps to a `## <heading>` inside `profile.md`: extract lines from that `## <heading>` up to (but not including) the next `## ` heading. Render that block.
-4. If the section doesn't exist in the file: report "Section '<name>' not found in <person>'s profile."
+4. If the section is `do/don't` / `strategy` / `rules` (the aggregated rules view): see Aggregated rules view below.
+5. If the section doesn't exist in the file or framework file is missing: report "Section '<name>' not found in <person>'s profile."
+
+#### Aggregated rules view
+
+When the user asks for `do/don't` / `strategy` / `rules`, gather rules from every `frameworks/<slug>.md` and present them grouped by situation category. This is the cross-framework rollup of what used to live in `profile.md → ## Communication Strategy`:
+
+1. List `PROFILE_DIR/<person>/frameworks/*.md`. If the directory is missing or empty, report "No framework analysis yet — run `nemawashi-analyze <person>`." and stop.
+2. For each situation in order — `When Requesting`, `During Conflict`, `When Reporting`, `Routine Collaboration` — render a section. Under each, list every framework that has a non-trivial rule for that situation:
+   ```markdown
+   ### When Requesting
+
+   **Defense Mechanisms** (Confirmed)
+   - DO: <rule> [signal: <tag>]
+   - DON'T: <rule> [signal: <tag>]
+
+   **Conflict Mode (TKI)** (Confirmed)
+   - DO: ...
+   - DON'T: ...
+   ```
+   Skip a framework's block under a situation if its rules are only the `(no framework-specific rule for this situation)` placeholder.
+3. If the user passed an extra word matching one of the situations (e.g. `<name> do/don't conflict`), filter to that one situation only.
+
+Optional filter: `<name> do/don't <framework-slug>` restricts to a single framework's rules across all situations (functionally equivalent to opening `frameworks/<slug>.md`, but rendered situation-major rather than file-as-written).
 
 ### Step 4: Handle Empty / Missing States
 

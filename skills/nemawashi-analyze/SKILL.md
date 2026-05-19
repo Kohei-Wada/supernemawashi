@@ -7,6 +7,8 @@ description: Use when user wants to analyze a person's behavioral patterns - rea
 
 Analyze a person's collected profile data using psychological frameworks to identify behavioral patterns, classify psychological tendencies, and generate evidence-based communication strategies.
 
+The work is decomposed into independent per-framework agents (one per framework, dispatched in parallel) plus a synthesis pass. Each framework owns its own file under `frameworks/<slug>.md`, and the top-level `profile.md` is a slim index that holds Core Pattern + summary table.
+
 ## When to Use
 
 - User says "analyze X" or "what kind of person is X?"
@@ -15,132 +17,164 @@ Analyze a person's collected profile data using psychological frameworks to iden
 
 ## Prerequisites
 
-A profile must exist at `PROFILE_DIR/<person-name>/profile.md`. If it doesn't, tell the user to run nemawashi-collect first.
+A profile must exist at `PROFILE_DIR/<person-name>/`. If `profile.md` is missing or there is no `facts.jsonl`/`facts.md`, tell the user to run `nemawashi-collect` first.
 
 ## Process
 
-### Step 1: Read All Profile Data
+### Step 1: Read shared inputs
 
-Read the following files for the target person:
+Read these files once, in the main session (shared input for every per-framework agent):
+
 - `PROFILE_DIR/<person-name>/profile.md`
 - `PROFILE_DIR/<person-name>/facts.jsonl` (newer profiles)
 - `PROFILE_DIR/<person-name>/facts.md` (legacy profiles)
 - `PROFILE_DIR/<person-name>/relationship.md` (if exists)
 
-If both `facts.jsonl` and `facts.md` exist for the same profile, read both and merge entries (sort by date descending). New profiles only have `facts.jsonl`; legacy profiles may still have only `facts.md` until a future migration consolidates them.
+If both `facts.jsonl` and `facts.md` exist, both are read and merged (sort by date descending) — the dual-read transition.
 
-### Step 2: Behavioral Signal Extraction
+Also enumerate the framework definition files: every `*.md` under `frameworks/` (relative to this skill).
 
-Read all `*.md` files in the `frameworks/` directory (relative to this skill). For each fact entry from Step 1, extract **behavioral signals** — not "what happened" but "what this reveals about the person psychologically." Tag each signal with relevant framework dimensions using each framework file's Reference Table and Signal Tags.
+### Step 2: Dispatch one agent per framework
 
-Fact entries come from two possible files:
+For each framework file, dispatch a subagent (general-purpose) with the prompt template below. The agents run in **parallel** — they share no state and write to disjoint output files.
 
-- **`facts.jsonl`** — one JSON object per line. Required fields: `date`, `source`, `content`. Optional: `url`, `channel`, `repository`, `meeting_title`, `participants`, `tags`. Parse each line with a JSON parser. Schema: `../nemawashi-collect/FACTS-SCHEMA.md`.
-- **`facts.md`** (legacy) — one entry per line in the form `- [YYYY-MM-DD] [source] Description text (url)`, with month-precision dates (`[YYYY-MM]`) also valid. Source-tag position has minor variants in older profiles — tolerate any leading `[source]` token after the date.
-
-**Example (jsonl):**
+#### Agent prompt template
 
 ```
-facts.jsonl entry:
-{"date":"2026-03-27","source":"slack","content":"Rear-guard criticism to Alice: 'Doesn't the alert being triggered == response needed?'","url":"https://acme.slack.com/archives/C123/p456","channel":"#engineering"}
+You are analyzing one psychological framework for a single person.
 
-Signals:
-- Withholds information until subordinate acts, then criticizes [defense: info-withholding]
-- Question format disguises criticism [TA: CP disguised as A]
-- Maintains safe position by not committing upfront [motivator: safety/predictability]
+Framework definition file: <ABSOLUTE_PATH_TO_FRAMEWORK_DEF>
+Profile directory:         PROFILE_DIR/<name>/
+Output file:               PROFILE_DIR/<name>/frameworks/<slug>.md
+Today's date:              YYYY-MM-DD
+
+Read these inputs:
+- The framework definition file above (Reference Table, Signal Tags, Classification Guidance, Rule Generation, tier).
+- facts.jsonl in the profile dir (one JSON record per line; schema at skills/nemawashi-collect/FACTS-SCHEMA.md). Read facts.md if it also exists.
+- relationship.md in the profile dir if it exists.
+
+Steps:
+
+1. Behavioral signal extraction. Scan each fact entry. Tag every relevant signal with this framework's Signal Tags. Skip facts that surface no signal for this framework.
+
+2. Tier check. Read the framework's `tier` frontmatter. If tier 2 and fewer than 2 signals were found, emit a Data Gap result (see Output) and stop.
+
+3. Classification. Aggregate signals per the framework's Classification Guidance. Pick the dominant pattern (or patterns if the framework supports multiple, e.g. TKI mode-with-context).
+
+4. Confidence assignment.
+   - 3+ signals → Confirmed
+   - 1-2 signals → Hypothesis
+   - 0 signals → Data Gap
+
+5. Rule generation. For the four situation categories (When Requesting, During Conflict, When Reporting, Routine Collaboration), derive DO/DON'T rules per the framework's Rule Generation section. Each rule must cite a signal tag and brief reasoning. Rules from Hypothesis classifications are tagged `(hypothesis)`. If no rule is applicable for a situation, write `- (no framework-specific rule for this situation)` rather than fabricating one.
+
+Output (atomic write to PROFILE_DIR/<name>/frameworks/<slug>.md):
+
+---
+framework: <slug>
+classification: <one-line classification text>
+confidence: Confirmed | Hypothesis | Data Gap
+last_updated: YYYY-MM-DD
+---
+
+# <Framework display name>
+
+## Classification
+<1-3 sentences explaining the classification.>
+
+## Evidence
+- [YYYY-MM-DD] <fact citation> → <signal explanation> [signal: <tag>]
+- ...
+
+## Rules
+
+### When Requesting
+**DO:**
+- <Action> — <reasoning> [signal: <tag>]
+
+**DON'T:**
+- <Action> — <reasoning> [signal: <tag>]
+
+### During Conflict
+**DO:** ...
+**DON'T:** ...
+
+### When Reporting
+**DO:** ...
+**DON'T:** ...
+
+### Routine Collaboration
+**DO:** ...
+**DON'T:** ...
+
+If the classification is Data Gap, omit the Rules section entirely and add a "## Data Gap" section explaining what evidence would be needed.
+
+Return one line to the orchestrator in this exact shape:
+
+<slug>: <classification text> (Confidence)
+
+Examples:
+  defense-mechanisms: Information withholding + Intellectualization (Confirmed)
+  attachment-style: Data Gap
 ```
 
-This step is internal working — do NOT write it to profile.md. Use it as input for the following steps.
+The orchestrator collects the one-line summaries; the full content lives in each `frameworks/<slug>.md` file.
 
-### Step 3: Framework Classification
+### Step 3: Wait for all agents, then synthesize
 
-For each framework file loaded in Step 2, check its `tier` frontmatter field and aggregate signals accordingly:
+After every dispatched agent returns, the orchestrator runs the synthesis pass in the main session:
 
-- **Tier 1** — Always analyze. Determine the dominant pattern using the framework file's Classification Guidance section.
-- **Tier 2** — Analyze only if 2+ relevant signals exist for this framework. Skip otherwise.
+1. Read every `PROFILE_DIR/<name>/frameworks/*.md` just produced.
+2. Write `profile.md` per the format in `OUTPUT-FORMAT.md`:
+   - Preserve manual / non-analysis sections (Basic Info, Communication Patterns, Active Channels, Work Patterns) if they exist.
+   - Replace the **Core Pattern** section with a fresh 1-3 sentence synthesis that unifies the framework files into a single behavioral explanation.
+   - Replace the **Framework Summary** table — one row per framework, pulled from each file's frontmatter (`classification`, `confidence`) plus a relative link to the file.
+   - Update the trailing `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` comment.
+3. Write `contradictions.md` (cross-framework inconsistencies — verbal contradictions, say-do gaps, audience-dependent behavior, temporal reversals). Cite 2+ facts per contradiction. If none are detected, write the empty-state template per `OUTPUT-FORMAT.md`.
+4. Update `relationship.md` "Approach Strategy" section if it exists.
 
-**Confidence rules:**
+### Step 4: Report
 
-| Evidence Count | Confidence | Display |
-|---|---|---|
-| 3+ signals | Confirmed | Shown in table, rules generated normally |
-| 1-2 signals | Hypothesis | Shown in table with "Hypothesis" tag, rules tagged `(hypothesis)` |
-| 0 signals | Data Gap | Excluded from table, listed in Data Gaps section |
+Print to the user:
 
-Output the classification as the **Framework Classifications** table in profile.md.
-
-### Step 4: Core Pattern Synthesis
-
-Write 1-3 sentences that unify the framework classifications into a single behavioral explanation — the "why behind everything." This should be the deepest insight about what drives this person.
-
-**Example:** "Treats team members as potential threats rather than collaborators. All behavior optimizes for not being attacked — withholding information (no ammunition), rear-guard criticism (safe offensive), judgment avoidance (no commitments to be held to)."
-
-Output this as the **Core Pattern** section in profile.md.
-
-### Step 5: Situation-Indexed Rule Generation
-
-Using the framework classifications from Step 3, generate concrete DO/DON'T rules organized by the 4 situation categories (see using-supernemawashi → Situation Categories): **When Requesting**, **During Conflict**, **When Reporting**, **Routine Collaboration**.
-
-**Each rule MUST include:**
-- The concrete action (what to do or not do)
-- Framework tag(s) citing which classification drives this rule (e.g., `[defense: info-withholding + TKI: competing]`)
-- Brief reasoning connecting the framework to the action
-
-**Deriving rules from frameworks:** For each classified framework, read its Rule Generation section and apply it to derive situation-indexed DO/DON'T rules.
-
-Rules from "Hypothesis" classifications are included but tagged `(hypothesis)`.
-
-Output as the **Communication Strategy** section in profile.md.
-
-### Step 6: Contradiction Detection
-
-Compare facts.md entries to identify inconsistencies — statements or behaviors that contradict each other. Look for:
-
-1. **Verbal contradictions** — Person said X on one occasion but said the opposite on another
-2. **Say-do gaps** — Person stated an intention or value but acted against it
-3. **Audience-dependent behavior** — Person behaves one way with subordinates and the opposite with superiors
-4. **Temporal reversals** — Person took a position, then later reversed it without acknowledging the change
-
-**Rules:**
-- Each contradiction MUST cite 2+ specific facts.md entries as evidence (with dates and sources)
-- Do NOT flag legitimate changes of mind where the person acknowledged the shift
-- Do NOT flag minor inconsistencies — only contradictions that reveal a meaningful behavioral pattern
-- If no contradictions are found, write contradictions.md with an empty entries section and a note: "No contradictions detected with current data."
-
-Output to `contradictions.md` in the format specified below.
-
-### Step 7: Write & Report
-
-Write all results to profile.md in the format specified below. Update relationship.md "Approach Strategy" section if it exists. Write contradiction analysis to contradictions.md.
-
-**Report to user:**
-- Core Pattern (the synthesis)
-- Top 3 most important DO/DON'T rules with reasoning
-- Contradictions detected (count and most significant, if any)
-- Data Gaps and what to collect next
+- The Core Pattern.
+- A summary table (framework → classification → confidence → file path).
+- Top 3 rules across frameworks (pick the highest-confidence + most actionable ones).
+- Contradictions detected (count + most significant).
+- Data Gaps and what to collect next.
 
 ## Output Format
 
-See `OUTPUT-FORMAT.md` (relative to this skill) for the full output format specifications for profile.md and contradictions.md.
+See `OUTPUT-FORMAT.md` (relative to this skill) for full schemas:
+
+- The new slim `profile.md` (Core Pattern + Framework Summary + preserved manual sections).
+- The per-framework file at `frameworks/<slug>.md`.
+- `contradictions.md` (unchanged).
 
 ## Re-analysis Rules
 
-- Check `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` comment in profile.md
-- If facts.md has new entries since last analysis, re-run Steps 2-7
-- Lines tagged `<!-- manual -->` are user additions — preserve them across re-analysis
-- The Core Pattern is always regenerated (it depends on all frameworks)
-- **Update, don't overwrite** — when re-analyzing, preserve manually added notes outside auto-generated sections
+- Check `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` in `profile.md`.
+- If `facts.jsonl` / `facts.md` has new entries since last analysis, re-dispatch the per-framework agents.
+- Re-analysis **replaces** each `frameworks/<slug>.md` atomically (write to temp, mv on success).
+- Lines tagged `<!-- manual -->` are user additions — preserve them across re-analysis.
+- The Core Pattern and Framework Summary are always regenerated (they depend on all frameworks).
 
 ## Key Principles
 
-- **Evidence-based** — Every classification and rule must cite specific data points from facts.md. No speculation without evidence.
-- **Non-judgmental framing** — Describe behaviors and patterns, not character. "Defaults to avoidance under conflict" not "is a coward."
-- **Actionable output** — Every framework classification MUST produce at least one DO/DON'T rule. If it can't, don't include the classification.
-- **Hypothesis transparency** — Low-data classifications are included but clearly marked. The user decides whether to act on hypotheses.
-- **Framework reference consistency** — Always consult the framework files in `frameworks/` for definitions. Do not rely on general knowledge alone.
+- **One framework per file.** Each `frameworks/<slug>.md` is independently analyzable, replaceable, and consumable. Cross-profile queries grep on a single path.
+- **Parallel dispatch.** Wall-clock cost is bounded by the slowest framework + synthesis, not the sum.
+- **Evidence-based.** Every classification and rule cites specific signals from facts. No speculation without evidence.
+- **Non-judgmental framing.** Describe behaviors and patterns, not character.
+- **Actionable.** Every Confirmed classification produces at least one situation-indexed DO/DON'T rule. If it can't, downgrade to Hypothesis or Data Gap.
+- **Hypothesis transparency.** Low-data classifications are kept but clearly marked.
+- **Framework reference consistency.** Always consult the definition under `frameworks/` — never rely on general knowledge alone.
+
+## Multi-framework rules
+
+Some rules naturally cite two frameworks (e.g. `[defense: info-withholding + TKI: competing]`). Place the rule under its **primary** framework's file and tag the secondary framework inline in the rule's bracket annotation. If the rule depends roughly equally on two, pick the one whose Signal Tags it references first. This keeps each file self-contained without duplicating rules.
 
 ---
 
 ## Framework File Contract
 
-See `FRAMEWORK-CONTRACT.md` (relative to this skill) for the framework file template and required fields.
+See `FRAMEWORK-CONTRACT.md` (relative to this skill) for the framework definition template and required fields.

@@ -40,7 +40,7 @@ The old `profile.md`'s Framework Classifications table and Communication Strateg
 After writing:
 
 - `frameworks/` directory exists in the profile.
-- It contains at least the tier-1 framework files: `defense-mechanisms.md`, `thomas-kilmann-tki.md`, `transactional-analysis-ta.md`, `core-motivators.md`, `cognitive-biases.md`. (`attachment-style.md` is tier-2 and may be skipped if the agent emitted a Data Gap.)
+- It contains one `<slug>.md` file per tier-1 framework defined in [`skills/nemawashi-analyze/FRAMEWORKS.md`](../../nemawashi-analyze/FRAMEWORKS.md). Tier-2 frameworks may be skipped if the agent emitted a Data Gap.
 - Each `frameworks/<slug>.md` has the required frontmatter fields: `framework`, `classification`, `confidence`, `last_updated`.
 - `profile.md`'s `## Framework Summary` table has one row per produced framework file with a link to the file.
 - The manual sections of `profile.md` (Basic Info, Communication Patterns, Active Channels, Work Patterns) are preserved verbatim from the pre-migration state.

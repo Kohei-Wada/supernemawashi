@@ -33,7 +33,7 @@ Read the recipient's profile from `PROFILE_DIR/<person-name>/`. The profile is s
 - `relationship.md` — User's relationship and approach strategy.
 - `contradictions.md` — Known contradictions (relevant for difficult conversations; cheap to load).
 
-**Conditionally load** (per Step 3's situation mapping):
+**Conditionally load** (per Step 3's situation mapping). The framework slugs referenced below are the canonical set registered in [`skills/nemawashi-analyze/FRAMEWORKS.md`](../nemawashi-analyze/FRAMEWORKS.md); add a row + a mapping entry below whenever a new framework lands there:
 
 | Situation | Always load | Add if signals suggest |
 |---|---|---|

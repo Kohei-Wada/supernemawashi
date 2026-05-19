@@ -2,14 +2,14 @@
 name: framework-analyzer
 description: |
   Analyzes ONE psychological framework for ONE profiled person and writes the result to PROFILE_DIR/<name>/frameworks/<slug>.md.
-  Use when dispatched by nemawashi-analyze. Each invocation handles exactly one framework; the parent dispatches 6 in parallel (one per framework definition).
+  Use when dispatched by nemawashi-analyze. Each invocation handles exactly one framework; the parent dispatches one per framework defined in skills/nemawashi-analyze/FRAMEWORKS.md, in parallel.
   <example>
-  Context: nemawashi-analyze running for profile "alice" with 6 frameworks
-  parent: dispatches 6 framework-analyzer agents in parallel — defense-mechanisms, thomas-kilmann-tki, transactional-analysis-ta, core-motivators, cognitive-biases, attachment-style
+  Context: nemawashi-analyze running for profile "alice"
+  parent: dispatches one framework-analyzer agent per row in skills/nemawashi-analyze/FRAMEWORKS.md, in parallel
   </example>
   <example>
   Context: migration 03-frameworks-split applies to one profile
-  migration-applier (intermediate parent): dispatches 6 framework-analyzer agents for the profile
+  migration-applier (intermediate parent): dispatches one framework-analyzer agent per registry framework for the profile
   </example>
 tools: ["Read", "Write", "Bash", "Glob"]
 ---
@@ -22,7 +22,7 @@ You are a worker agent that classifies ONE psychological framework for ONE profi
 
 Every dispatch includes the following in the prompt:
 
-- `framework_slug` — e.g. `defense-mechanisms`, `thomas-kilmann-tki`, `attachment-style`
+- `framework_slug` — one of the slugs registered in [`skills/nemawashi-analyze/FRAMEWORKS.md`](../skills/nemawashi-analyze/FRAMEWORKS.md)
 - `framework_definition_path` — absolute path to the framework definition under `skills/nemawashi-analyze/frameworks/<slug>.md`
 - `profile_dir` — absolute path to `PROFILE_DIR/<name>/`
 - `output_path` — absolute path to `PROFILE_DIR/<name>/frameworks/<slug>.md`

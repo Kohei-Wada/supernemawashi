@@ -55,6 +55,7 @@ All operational skills are verb-first under the `nemawashi-` prefix.
 | `nemawashi-note` | Append a single observation to a profile from an off-MCP interaction (1:1, phone, hallway) — the channel for everything adapters can't see |
 | `nemawashi-reply` | Crafts 2-3 draft messages tailored to the recipient's psychological profile, loading only the framework files relevant to the current situation |
 | `nemawashi-migrate` | Upgrades legacy profile data to the current on-disk format. Self-discovering registry — drop a `.sh`/`.md` pair under `skills/nemawashi-migrate/migrations/` to add a new migration |
+| `nemawashi-issue` | Turns free-form feedback or design ideas into a properly-formatted GitHub issue conforming to this repo's house style — searches for duplicates, previews, and files via `gh` only after explicit confirmation |
 | `using-supernemawashi` | Entry point — routes requests to the appropriate skill |
 
 ### Psychological Frameworks

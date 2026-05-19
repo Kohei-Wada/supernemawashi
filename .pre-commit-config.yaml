@@ -11,7 +11,7 @@ repos:
     rev: v0.10.0.1
     hooks:
       - id: shellcheck
-        files: '^(hooks/session-start|scripts/.*\.sh|skills/.*\.sh)$'
+        files: '^(hooks/session-start|scripts/.*\.sh|skills/.*\.sh|tests/.*\.sh)$'
 
   - repo: local
     hooks:

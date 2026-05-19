@@ -21,6 +21,22 @@ Each migration is a **pair of files** in `./migrations/` (relative to this skill
 
 Adding a new migration is a drop-in of those two files. No registry edit, no edit to this skill.
 
+### Filename convention: phase by numeric prefix
+
+The `NN` prefix encodes the migration's **phase**, not just its insertion order:
+
+| Prefix range | Phase | Purpose | Examples |
+|---|---|---|---|
+| `01-89` | **Forward** | Produce or extend the canonical format. Non-destructive on the source. | `01-facts-md-to-jsonl` (convert), `02-merge-legacy-md-into-jsonl` (merge gap) |
+| `90-99` | **Cleanup** | Delete redundant legacy artifacts now that the forward phase is complete. Destructive on the source — opt-in. | `90-delete-legacy-facts-md` |
+
+Because `./migrations/*.sh` iterates in lexicographic order, **all forward migrations run before any cleanup migration in a single round**. This is the key property: a profile that needs both `02-merge` and `90-delete` gets both applied correctly within one detect → apply round, rather than requiring a re-detect round between them.
+
+When adding a new migration, pick the prefix by what the migration does to the source files:
+
+- Produces a new canonical file or extends one without deleting the source → `01-89`.
+- Deletes or replaces a legacy source file once it is provably redundant → `90-99`.
+
 ## Process
 
 ### Step 1: List available migrations
@@ -68,7 +84,7 @@ For each migration the user opted into:
 After applying all selected migrations:
 
 1. Print the aggregated report (one line per profile per migration).
-2. Re-run `./detect.sh`. If there are still candidates, surface them — they may be migrations that became eligible only after the previous round (e.g. `02-delete-legacy-facts-md` becomes eligible right after `01-facts-md-to-jsonl` completes, and the framework-split migration would depend on `facts.jsonl` existing).
+2. Re-run `./detect.sh`. Within a single round the forward → cleanup ordering is already handled by the filename convention (`01-89` runs before `90-99`), so a typical migration sequence completes in one round. Re-detect can still surface migrations that became eligible only after the previous round in edge cases — e.g. a future framework-split migration that depends on `facts.jsonl` existing.
 3. If everything is clean, confirm "All migrations applied. Profile set is current."
 
 ## Parallel application

@@ -39,7 +39,7 @@ One JSON object per line in `facts.jsonl`. Required fields: `date`, `source`, `c
    - **content** — everything else, with the source/url/channel fragments removed and surrounding whitespace trimmed.
 4. If a line cannot be matched against any of the five patterns, **skip it and record a note** in the per-profile report. Do not crash; do not invent missing fields. Note the line number and the raw line so the user can fix it manually if needed.
 5. Emit one JSONL record per parsed line, in the order they appear in the source. Use a JSON encoder (e.g. `jq -c -n --arg ...`) to handle escapes correctly; do not hand-build JSON strings.
-6. Write atomically: build the output into a temp file in the same directory, then `mv` it to `facts.jsonl` on success. Do not delete `facts.md` in this step — the redundant copy is removed by the chained `02-delete-legacy-facts-md` migration, which the orchestrator picks up on the next detect round.
+6. Write atomically: build the output into a temp file in the same directory, then `mv` it to `facts.jsonl` on success. Do not delete `facts.md` in this step — the redundant copy is removed by the cleanup-phase `90-delete-legacy-facts-md` migration, which runs later in the same round (the `01-89` / `90-99` filename convention orders forward and cleanup phases automatically).
 
 ## Verify, per eligible profile
 

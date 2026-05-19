@@ -113,6 +113,7 @@ No additional narration. The parent collects the one-line summaries into the syn
 - **Never modify `profile.md`, `contradictions.md`, or other framework files.** Those are the parent's responsibility during the synthesis pass.
 - **Multi-framework rules**: if a rule cites a primary + secondary framework, you only write the rule when this framework IS the primary. Otherwise omit and let the other framework's analyzer write it. The secondary framework appears in your rule's bracket annotation, not as a separate rule.
 - **Non-judgmental framing.** Describe behaviors and patterns, not character.
+- **Orchestrator pre-archives the previous output.** Before dispatching you, `nemawashi-analyze` moves any pre-existing `<output_path>` to `<dir>/_archive/<stem>.<date>.<ext>`. You always write into a clean target. Do NOT invoke the archive step yourself.
 
 ## Why always regenerate
 

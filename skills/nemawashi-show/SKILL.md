@@ -54,11 +54,17 @@ Section keywords (case-insensitive):
 
 ### Step 2: Resolve the Person (when applicable)
 
-1. List directories in `PROFILE_DIR/` (ignore `README.md` and any non-directory entries).
-2. **Exact match** (case-insensitive) → use it.
-3. **Prefix match** → use it.
-4. **Substring match** → if exactly one, use it. If multiple, list candidates and ask which.
-5. **No match** → report "No profile for '<name>'. Did you mean: <closest>?" or suggest running `nemawashi-collect` if there are no close matches.
+The common case is "user typed an exact directory name" — go straight to the target file. Only fall back to fuzzy resolution when the direct read misses.
+
+1. **Direct read** — attempt to read the target file at `PROFILE_DIR/<name>/<file>` immediately (e.g. `PROFILE_DIR/<name>/profile.md` for a person operation, `PROFILE_DIR/<name>/relationship.md` for `<name> relationship`, etc.). If the read succeeds, you have resolved the person in **one tool call** — proceed to Step 3.
+2. **On read failure** (file or directory doesn't exist), fall back to fuzzy resolution:
+   1. List directories in `PROFILE_DIR/` (ignore `README.md` and any non-directory entries).
+   2. **Exact match** (case-insensitive) → use it.
+   3. **Prefix match** → use it.
+   4. **Substring match** → if exactly one, use it. If multiple, list candidates and ask which.
+   5. **No match** → report "No profile for '<name>'. Did you mean: <closest>?" or suggest running `nemawashi-collect` if there are no close matches.
+
+The direct-read path is the happy path: typed name → exact-match → one tool call. The fuzzy path is for typos, partial names, and missing profiles.
 
 ### Step 3: Execute
 
@@ -149,4 +155,4 @@ Optional filter: `<name> do/don't <framework-slug>` restricts to a single framew
 
 - **Read-only.** Never write or modify profile files. If the user wants to change something, route them to the appropriate skill.
 - **No interpretation.** Show the data as written. The user is the analyst here — they want to see their own notes, not your summary of them.
-- **Fast.** A "view" operation should resolve in one tool call (or two: list dirs, read file). Don't over-engineer.
+- **Fast — direct-read first.** Person and section operations should resolve in **one tool call** when the user typed an exact name. Read the target file directly; only fall back to `ls PROFILE_DIR/` + fuzzy match when the direct read misses. Don't over-engineer.

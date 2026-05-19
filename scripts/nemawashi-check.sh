@@ -3,8 +3,10 @@
 # Usage: nemawashi-check.sh [profiles_dir]
 # Output: TSV with columns: name, analyzed_date, days_ago, analyzed_facts, current_facts, status
 #
-# Standard facts.md entry format:
-#   - [YYYY-MM-DD] [source] Description text (url)
+# Fact data lives in two possible files (dual-read during legacy → jsonl migration):
+#   facts.jsonl: one JSON record per line (newer profiles)
+#   facts.md:    `- [YYYY-MM-DD] [source] ...` or `- [YYYY-MM] ...` (legacy)
+# Both files may coexist for a profile mid-migration — sum the counts.
 
 set -uo pipefail
 
@@ -25,7 +27,8 @@ for dir in "$PROFILES_DIR"/*/; do
   [ -d "$dir" ] || continue
   name=$(basename "$dir")
   profile="$dir/profile.md"
-  facts="$dir/facts.md"
+  facts_md="$dir/facts.md"
+  facts_jsonl="$dir/facts.jsonl"
 
   # Parse analyzed comment from profile.md
   analyzed_date="never"
@@ -37,11 +40,17 @@ for dir in "$PROFILES_DIR"/*/; do
     [ -n "$local_facts" ] && analyzed_facts="$local_facts"
   fi
 
-  # Count current facts entries using standard format: - [YYYY-MM-DD] [source]
+  # Count current facts: facts.jsonl (one record per non-empty line) + facts.md (bullet entries with day- or month-precision dates).
   current_facts=0
-  if [ -f "$facts" ]; then
-    current_facts=$(grep -cE '^- \[[0-9]{4}-[0-9]{2}-[0-9]{2}\] \[' "$facts" 2>/dev/null || true)
-    [ -z "$current_facts" ] && current_facts=0
+  if [ -f "$facts_jsonl" ]; then
+    jsonl_count=$(grep -cE '^[^[:space:]]' "$facts_jsonl" 2>/dev/null || true)
+    [ -z "$jsonl_count" ] && jsonl_count=0
+    current_facts=$((current_facts + jsonl_count))
+  fi
+  if [ -f "$facts_md" ]; then
+    md_count=$(grep -cE '^- \[[0-9]{4}-[0-9]{2}(-[0-9]{2})?\]' "$facts_md" 2>/dev/null || true)
+    [ -z "$md_count" ] && md_count=0
+    current_facts=$((current_facts + md_count))
   fi
 
   # Calculate days ago and determine status
@@ -59,8 +68,8 @@ for dir in "$PROFILES_DIR"/*/; do
     fi
   fi
 
-  # No facts.md at all
-  if [ ! -f "$facts" ] && [ "$analyzed_date" = "never" ]; then
+  # No fact data at all
+  if [ ! -f "$facts_md" ] && [ ! -f "$facts_jsonl" ] && [ "$analyzed_date" = "never" ]; then
     status="no_data"
   fi
 

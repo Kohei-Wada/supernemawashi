@@ -27,11 +27,15 @@ Signals worth capturing:
 - PR scope authored (large refactors vs. tiny fixes)
 - Commit message discipline (one-liners vs. structured)
 
-`facts.md` line format:
+Append one JSONL record per signal to `<profile-dir>/facts.jsonl` following the canonical schema in `../FACTS-SCHEMA.md`. Use `source: "github"`. GitHub-specific optional field: `repository` (as `owner/repo`).
 
+Example:
+
+```jsonl
+{"date":"2026-03-28","source":"github","content":"<observable behavior>","url":"https://github.com/<owner>/<repo>/pull/<num>","repository":"<owner>/<repo>"}
 ```
-- [YYYY-MM-DD] [github] <observable behavior> (https://github.com/<owner>/<repo>/pull/<num>)
-```
+
+Never modify a pre-existing `facts.md` — new entries always go to `facts.jsonl`.
 
 ## Discovery Recipe
 Used by nemawashi-discover to find unprofiled people the user interacts with.

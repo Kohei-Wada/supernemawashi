@@ -88,34 +88,19 @@ last_updated: [YYYY-MM-DD]
 <!-- Populated after nemawashi-analyze runs -->
 ```
 
-**facts.md** — Record notable statements and observations. Use the standard entry format:
-
-```
----
-person: [Full Name]
-last_updated: [YYYY-MM-DD]
----
-
-# Facts: [Full Name]
-
-## YYYY-MM
-
-- [YYYY-MM-DD] [source] Description text (url)
-- [YYYY-MM-DD] [source] Description text (url)
-```
+**facts.jsonl** — Append one observable behavior per line, following the canonical schema in `FACTS-SCHEMA.md`. New entries always go here; never modify a legacy `facts.md` if one is present (consumers read both).
 
 **Entry format rules:**
-- Each entry is a single line starting with `- [YYYY-MM-DD] [source]`
-- `source` is the `output_tag` of an adapter (`slack`, `gmail`, `calendar`, `github`, …), the slug of an uncovered MCP server, or `manual` for user-provided facts
-- URL is optional, appended in parentheses at the end
-- Group entries under `## YYYY-MM` month headers
-- One fact per line — no multi-line entries or continuation lines
+- One JSON object per line (JSONL); no top-level metadata block — person info lives in `profile.md`.
+- Required fields: `date` (`YYYY-MM-DD` or `YYYY-MM`), `source` (the adapter's `output_tag` or `manual` for user-provided facts), `content` (one observable behavior — what they said or did).
+- Optional fields are adapter-specific — see `FACTS-SCHEMA.md` and each adapter file.
+- Append-only. Don't read-modify-write the whole file just to add an entry.
 
 **Examples:**
-```
-- [2026-03-27] [slack] Rear-guard criticism to subordinate about alert handling (https://slack.com/archives/C123/p456)
-- [2026-03-27] [gmail] Accepted meeting invitation for EoL review as passive participant
-- [2026-03-26] [calendar] Attended ops meeting organized by team lead
+```jsonl
+{"date":"2026-03-27","source":"slack","content":"Rear-guard criticism to subordinate about alert handling","url":"https://acme.slack.com/archives/C123/p456","channel":"#engineering"}
+{"date":"2026-03-27","source":"gmail","content":"Accepted meeting invitation for design review as passive participant"}
+{"date":"2026-03-26","source":"calendar","content":"Attended ops meeting organized by team lead","meeting_title":"Ops Weekly"}
 ```
 
 ### Step 5: Suggest Next Steps

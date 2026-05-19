@@ -37,13 +37,15 @@ Signals worth capturing:
 - Recurring topics, projects, stated opinions
 - Reaction patterns (which emojis, to whom)
 
-`facts.md` line format:
+Append one JSONL record per signal to `<profile-dir>/facts.jsonl` following the canonical schema in `../FACTS-SCHEMA.md`. Use `source: "slack"`. Slack-specific optional field: `channel` (channel name with leading `#`).
 
-```
-- [YYYY-MM-DD] [slack] <observable behavior> (https://<workspace>.slack.com/archives/<channel>/p<timestamp>)
+Example:
+
+```jsonl
+{"date":"2026-03-28","source":"slack","content":"<observable behavior>","url":"https://<workspace>.slack.com/archives/<channel-id>/p<timestamp>","channel":"#<channel-name>"}
 ```
 
-Permalinks come from the message metadata. Omit the URL only if it cannot be constructed.
+Permalinks come from the message metadata. Omit `url` only if it cannot be constructed. Never modify a pre-existing `facts.md` — new entries always go to `facts.jsonl`.
 
 ## Discovery Recipe
 Used by nemawashi-discover to find unprofiled people the user interacts with.

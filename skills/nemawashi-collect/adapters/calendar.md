@@ -26,13 +26,15 @@ Signals worth capturing:
 - Cadence (daily standups, weekly syncs, monthly reviews)
 - Cancellation / decline patterns if visible
 
-`facts.md` line format:
+Append one JSONL record per signal to `<profile-dir>/facts.jsonl` following the canonical schema in `../FACTS-SCHEMA.md`. Use `source: "calendar"`. Calendar-specific optional field: `meeting_title` (the event title — omit when it contains confidential project names).
 
-```
-- [YYYY-MM-DD] [calendar] <observable pattern>
+Example:
+
+```jsonl
+{"date":"2026-03-28","source":"calendar","content":"<observable pattern>","meeting_title":"<event title if non-sensitive>"}
 ```
 
-URLs are typically omitted. Reference the meeting title in the description when relevant.
+Never modify a pre-existing `facts.md` — new entries always go to `facts.jsonl`.
 
 ## Discovery Recipe
 Used by nemawashi-discover to find unprofiled people the user interacts with.

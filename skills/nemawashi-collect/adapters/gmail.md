@@ -29,13 +29,15 @@ Signals worth capturing:
 - Length and structure of replies (one-liners vs. essays)
 - Initiative pattern (do they start threads or only react?)
 
-`facts.md` line format:
+Append one JSONL record per signal to `<profile-dir>/facts.jsonl` following the canonical schema in `../FACTS-SCHEMA.md`. Use `source: "gmail"`. URLs are typically omitted for Gmail — reference the thread subject in `content` when useful.
 
-```
-- [YYYY-MM-DD] [gmail] <observable behavior>
+Example:
+
+```jsonl
+{"date":"2026-03-28","source":"gmail","content":"<observable behavior, optionally referencing thread subject>"}
 ```
 
-URLs are typically omitted for Gmail; reference the thread subject in the description when useful.
+Never modify a pre-existing `facts.md` — new entries always go to `facts.jsonl`.
 
 ## Discovery Recipe
 Used by nemawashi-discover to find unprofiled people the user interacts with.

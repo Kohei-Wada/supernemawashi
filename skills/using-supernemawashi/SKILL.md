@@ -78,7 +78,7 @@ These variables are referenced by all supernemawashi skills. Do not redefine in 
 Profiles are stored in `PROFILE_DIR/<person-name>/`:
 - `profile.md` — Objective data and behavioral analysis
 - `relationship.md` — Your relationship and approach strategies
-- `facts.md` — Chronological record of statements and actions
+- `facts.jsonl` (newer) / `facts.md` (legacy) — Chronological record of statements and actions
 - `contradictions.md` — Detected contradictions
 
 Always check if a profile exists before advising on communication with someone. If no profile exists, suggest running nemawashi-collect first.

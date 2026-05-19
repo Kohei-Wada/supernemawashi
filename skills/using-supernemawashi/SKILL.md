@@ -14,6 +14,7 @@ All skills are verb-first under the `nemawashi-` prefix.
 | Skill | Use When |
 |-------|----------|
 | `supernemawashi:nemawashi-collect` | User wants to create or update someone's profile |
+| `supernemawashi:nemawashi-update` | User wants to refresh one or more profiles end-to-end (collect + analyze in one invocation) |
 | `supernemawashi:nemawashi-analyze` | User wants to analyze someone's behavioral patterns |
 | `supernemawashi:nemawashi-show` | User wants to view, list, or display existing profiles (read-only) |
 | `supernemawashi:nemawashi-discover` | User wants to find people they interact with but haven't profiled yet |
@@ -29,8 +30,11 @@ Updating a profile is normally a 2-step pipeline: **nemawashi-collect** (pull fr
 When the request is ambiguous, use this decision tree:
 
 ```
-"update/collect profile for X" (specific person)
+"create profile for X" / "collect <new person>" (no existing profile)
   → nemawashi-collect (then suggest nemawashi-analyze)
+
+"update <existing>" / "refresh <existing>" / "X を update して" / single-shot collect+analyze
+  → nemawashi-update
 
 "analyze X" / "what kind of person is X?"
   → nemawashi-analyze
@@ -38,8 +42,8 @@ When the request is ambiguous, use this decision tree:
 "show X" / "view X's profile" / "X見せて" / "Xのprofile" / "list profiles" / "誰がいる?"
   → nemawashi-show
 
-"update all profiles" / "batch update" / "re-analyze everyone"
-  → dispatch parallel agents (see Bulk Operations below)
+"update all profiles" / "全員 update" / "--all" / "refresh everyone"
+  → nemawashi-update --all (parent skill handles the 5-concurrent throttle)
 
 "check profiles" / "which are stale?" / "who needs re-analysis?"
   → nemawashi-check (can launch parallel agents to re-analyze)

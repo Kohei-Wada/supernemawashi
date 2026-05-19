@@ -34,23 +34,6 @@ If both `facts.jsonl` and `facts.md` exist, both are read and merged (sort by da
 
 Also enumerate the framework definition files: every `*.md` under `frameworks/` (relative to this skill).
 
-### Step 1.5: Archive existing output files
-
-Before agent dispatch (Step 2) and synthesis writes (Step 3), invoke `archive.sh` (a sibling of this SKILL.md) once per output file that may already exist. The script is a no-op when the target is missing, so call it unconditionally — no need to check existence first.
-
-For each framework slug enumerated in Step 1:
-
-- Run: `bash <this-skill-dir>/archive.sh PROFILE_DIR/<name>/frameworks/<slug>.md`
-
-For the top-level files updated by the synthesis pass:
-
-- Run: `bash <this-skill-dir>/archive.sh PROFILE_DIR/<name>/profile.md`
-- Run: `bash <this-skill-dir>/archive.sh PROFILE_DIR/<name>/relationship.md`
-
-`archive.sh` moves each existing file to `<dir>/_archive/<stem>.<date>.<ext>` where `<date>` is taken from the file's `last_updated:` frontmatter (fallback: mtime). Same-day collisions are suffixed `.1`, `.2`, etc.
-
-`contradictions.md` is intentionally NOT archived — it is regenerated each time but the loss is minor and the file is small.
-
 ### Step 2: Dispatch one framework-analyzer agent per framework
 
 For each framework definition file, dispatch the `framework-analyzer` agent (defined at `agents/framework-analyzer.md`) in parallel. Each agent runs in an isolated context, reads its framework definition + the profile inputs, and writes one `PROFILE_DIR/<name>/frameworks/<slug>.md` file. The agent's full contract — input parameters, apply steps, output schema, return shape — lives in `agents/framework-analyzer.md`; do not duplicate it here.
@@ -62,6 +45,7 @@ framework_slug:              <slug>
 framework_definition_path:   <absolute path to skills/nemawashi-analyze/frameworks/<slug>.md>
 profile_dir:                 PROFILE_DIR/<name>/
 output_path:                 PROFILE_DIR/<name>/frameworks/<slug>.md
+assertion_sh:                <absolute path to skills/nemawashi-analyze/assertion.sh>
 today:                       YYYY-MM-DD
 ```
 
@@ -115,7 +99,7 @@ See `OUTPUT-FORMAT.md` (relative to this skill) for full schemas:
 - **Actionable.** Every Confirmed classification produces at least one situation-indexed DO/DON'T rule. If it can't, downgrade to Hypothesis or Data Gap.
 - **Hypothesis transparency.** Low-data classifications are kept but clearly marked.
 - **Framework reference consistency.** Always consult the definition under `frameworks/` — never rely on general knowledge alone.
-- **Archive before overwrite.** Prior versions of `profile.md`, `relationship.md`, and `frameworks/<slug>.md` are moved to a sibling `_archive/` directory before the new version is written (see Step 1.5). This is a stop-gap until #41 (append-only assertion log) lands.
+- **Append-only assertion log.** Each `frameworks/<slug>.md` is a derived snapshot regenerated from `frameworks/<slug>.jsonl` on every analyze pass. Prior assertions are preserved in the .jsonl (append-only); time-travel queries via `nemawashi-show --as-of YYYY-MM-DD`. See `docs/specs/2026-05-19-41-append-only-temporal-model.md`.
 
 ## Multi-framework rules
 

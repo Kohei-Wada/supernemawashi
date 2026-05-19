@@ -110,7 +110,7 @@ The direct-read path is the happy path: typed name → exact-match → one tool 
 When the user asks for `do/don't` / `strategy` / `rules`, gather rules from every `frameworks/<slug>.md` and present them grouped by situation category. This is the cross-framework rollup of what used to live in `profile.md → ## Communication Strategy`:
 
 1. List `PROFILE_DIR/<person>/frameworks/*.md`. If the directory is missing or empty, report "No framework analysis yet — run `nemawashi-analyze <person>`." and stop.
-2. For each situation in order — `When Requesting`, `During Conflict`, `When Reporting`, `Routine Collaboration` — render a section. Under each, list every framework that has a non-trivial rule for that situation:
+2. For each situation in the canonical order defined in [using-supernemawashi → Situation Categories](../using-supernemawashi/SKILL.md#situation-categories), render a section. Under each, list every framework that has a non-trivial rule for that situation:
    ```markdown
    ### When Requesting
 

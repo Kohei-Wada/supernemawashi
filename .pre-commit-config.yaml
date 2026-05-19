@@ -36,6 +36,13 @@ repos:
         pass_filenames: false
         files: '^skills/.*/SKILL\.md$'
 
+      - id: check-situation-categories
+        name: Situation Category names in code match the canonical doc
+        entry: scripts/check-situation-categories.sh
+        language: script
+        pass_filenames: false
+        files: '^(skills/using-supernemawashi/SKILL\.md|skills/nemawashi-analyze/assertion\.sh|scripts/check-situation-categories\.sh)$'
+
       - id: check-no-internal-names
         name: scan staged additions against the local denylist
         entry: scripts/check-no-internal-names.sh

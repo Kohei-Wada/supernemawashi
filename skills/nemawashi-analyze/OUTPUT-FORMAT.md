@@ -82,24 +82,15 @@ last_updated: YYYY-MM-DD
 
 ## Rules
 
-### When Requesting
+One `### <situation>` sub-section per category defined in
+[using-supernemawashi → Situation Categories](../using-supernemawashi/SKILL.md#situation-categories),
+in the canonical order. Each sub-section has:
+
 **DO:**
 - [Action] — [reasoning] [signal: <tag>]
 
 **DON'T:**
 - [Action] — [reasoning] [signal: <tag>]
-
-### During Conflict
-**DO:** ...
-**DON'T:** ...
-
-### When Reporting
-**DO:** ...
-**DON'T:** ...
-
-### Routine Collaboration
-**DO:** ...
-**DON'T:** ...
 ```
 
 **Special cases**:

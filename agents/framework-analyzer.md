@@ -41,7 +41,7 @@ Every dispatch includes the following in the prompt:
    - 3+ signals → `Confirmed`
    - 1-2 signals → `Hypothesis`
    - 0 signals → `Data Gap`
-7. **Generate rules** for the four situation categories: `When Requesting`, `During Conflict`, `When Reporting`, `Routine Collaboration`. Each rule cites a signal tag and brief reasoning. Rules from Hypothesis classifications are tagged `(hypothesis)`. If no rule applies for a situation, write `- (no framework-specific rule for this situation)` rather than fabricate.
+7. **Generate rules** for each of the four situation categories defined in [using-supernemawashi → Situation Categories](../skills/using-supernemawashi/SKILL.md#situation-categories). Each rule cites a signal tag and brief reasoning. Rules from Hypothesis classifications are tagged `(hypothesis)`. If no rule applies for a situation, write `- (no framework-specific rule for this situation)` rather than fabricate.
 8. **Construct the assertion as a JSON object** with this shape:
 
    ```json

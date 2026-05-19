@@ -56,7 +56,7 @@ If a `frameworks/<slug>.md` does not exist or its frontmatter says `confidence: 
 
 ### Step 3: Analyze the Situation
 
-**Map to situation category.** Determine which of the 4 situation categories (see using-supernemawashi → Situation Categories) applies — **When Requesting**, **During Conflict**, **When Reporting**, or **Routine Collaboration**.
+**Map to situation category.** Determine which of the 4 categories defined in [using-supernemawashi → Situation Categories](../using-supernemawashi/SKILL.md#situation-categories) applies.
 
 Read the DO/DON'T rules for that situation category **from each loaded `frameworks/<slug>.md` file's `## Rules → ### <situation>` block**. These rules are backed by psychological framework analysis (defense mechanisms, conflict modes, ego states, motivators, cognitive biases) — use the per-rule `[signal: ...]` tags to explain your reasoning to the user. The cross-framework synthesis is in `profile.md → Core Pattern`.
 

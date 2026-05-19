@@ -25,7 +25,7 @@ Body sections (Confirmed / Hypothesis variant):
 - `# <output_label>` — the framework display name.
 - `## Classification` — 1-3 sentences expanding the frontmatter classification.
 - `## Evidence` — bullets shaped roughly `- [YYYY-MM-DD] [source] <quote> → <reasoning> [signal: <tag>]`.
-- `## Rules` with sub-sections `### When Requesting`, `### During Conflict`, `### When Reporting`, `### Routine Collaboration`. Each has `**DO:**` and `**DON'T:**` bullet lists.
+- `## Rules` with one `### <situation>` sub-section per category defined in [using-supernemawashi → Situation Categories](../../using-supernemawashi/SKILL.md#situation-categories), in the canonical order. Each has `**DO:**` and `**DON'T:**` bullet lists.
 
 Body sections (Data Gap variant):
 

@@ -98,6 +98,9 @@ sub_render() {
 
   printf '## Rules\n\n'
   local situation_key heading
+  # Headings below must match the canonical list in
+  # skills/using-supernemawashi/SKILL.md → "## Situation Categories".
+  # scripts/check-situation-categories.sh enforces alignment.
   for situation_key in requesting conflict reporting routine; do
     case "$situation_key" in
       requesting) heading="When Requesting" ;;

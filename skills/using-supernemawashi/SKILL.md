@@ -76,16 +76,17 @@ These variables are referenced by all supernemawashi skills. Do not redefine in 
 ## Profile Data
 
 Profiles are stored in `PROFILE_DIR/<person-name>/`:
-- `profile.md` — Objective data and behavioral analysis
+- `profile.md` — Slim index: Basic Info, Communication Patterns, Active Channels, Work Patterns (manual) + Core Pattern + Framework Summary table (analysis)
 - `relationship.md` — Your relationship and approach strategies
 - `facts.jsonl` (newer) / `facts.md` (legacy) — Chronological record of statements and actions
 - `contradictions.md` — Detected contradictions
+- `frameworks/<slug>.md` — One file per psychological framework, each with Classification + Evidence + situation-indexed DO/DON'T rules
 
 Always check if a profile exists before advising on communication with someone. If no profile exists, suggest running nemawashi-collect first.
 
 ## Situation Categories
 
-DO/DON'T rules in `profile.md` (under the "Communication Strategy" section) are organized by these 4 situation categories. nemawashi-analyze generates them; nemawashi-reply consumes them. Do not redefine in individual skills.
+DO/DON'T rules live in `frameworks/<slug>.md` under `## Rules → ### <situation>`, organized by these 4 situation categories. `nemawashi-analyze` generates them (one file per framework, in parallel); `nemawashi-reply` consumes them selectively (load only the 2-3 framework files relevant to the situation). Do not redefine in individual skills.
 
 1. **When Requesting** — you need something from them
 2. **During Conflict** — disagreement or tension

@@ -46,7 +46,7 @@ After running every known adapter, **scan for additional MCP servers** that look
 
 Create the directory `PROFILE_DIR/<person-name>/` if it doesn't exist.
 
-**profile.md** — Write with this structure:
+**profile.md** — Write with this structure. These are the **manual sections** that `nemawashi-analyze` preserves verbatim across re-analyses; the synthesis pass adds `## Core Pattern` and `## Framework Summary` underneath without touching these.
 
 ```
 ---
@@ -68,9 +68,14 @@ sources: [list of MCP sources used]
 - [Preferred channels]
 - [Tone and formality level]
 
-## Behavioral Patterns (Level B)
-<!-- Left empty for nemawashi-analyze to fill -->
+## Active Channels
+- [Slack channels, email threads, repos where this person is active]
+
+## Work Patterns
+- [Meeting cadence, focus hours, escalation patterns — fill what's observable]
 ```
+
+Leave the analysis sections (`## Core Pattern`, `## Framework Summary`) to `nemawashi-analyze`; the synthesis pass writes them. Per-framework files at `frameworks/<slug>.md` are also produced by `nemawashi-analyze`, not here.
 
 **relationship.md** — Ask the user about their relationship:
 

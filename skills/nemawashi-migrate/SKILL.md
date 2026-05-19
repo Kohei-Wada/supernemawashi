@@ -12,6 +12,10 @@ Orchestrate format migrations for profile data in `PROFILE_DIR`. The plugin's on
 - User says "migrate profiles", "upgrade profile format", "run pending migrations"
 - The session-start hook surfaced a `<MIGRATION_AVAILABLE>` block and the user wants to act on it
 
+## Skill arguments
+
+- `--apply-all` — opt into chain mode. After the user's initial confirmation, the orchestrator drives detect → apply rounds to completion without further prompts (see Step 4). Default is per-round confirmation.
+
 ## Architecture
 
 Each migration is a **pair of files** in `./migrations/` (relative to this skill — i.e. `skills/nemawashi-migrate/migrations/`):
@@ -65,9 +69,14 @@ The "What it does" column comes from the first heading of the matching `<id>.md`
 
 Prompt:
 
-> "Apply all pending migrations, a subset, or skip? (e.g. 'all', '01 only', 'skip')"
+> "Apply all pending migrations, a subset, or skip? (e.g. 'all', '01 only', 'skip', 'all and keep going' to auto-chain subsequent rounds)"
 
-Default to **dry-run / confirmation** — never apply without explicit user opt-in.
+Accepted responses:
+
+- `all` / `<id> only` / `<id> + <id>` / `skip` — applies the chosen migrations for **this round only**. After Step 4 the user is prompted again if new candidates appeared.
+- `all and keep going` / `yes to all` / `--apply-all` — applies all this round's candidates AND every chained round until detect is silent (chain mode). Equivalent to invoking the skill with the `--apply-all` argument.
+
+Default to **dry-run / confirmation** — never apply without explicit user opt-in. Chain mode is opt-in; it does not bypass per-migration verify (each migration's verify section still aborts the affected profile without halting the chain).
 
 ### Step 3: Apply per migration
 
@@ -85,7 +94,13 @@ After applying all selected migrations:
 
 1. Print the aggregated report (one line per profile per migration).
 2. Re-run `./detect.sh`. Within a single round the forward → cleanup ordering is already handled by the filename convention (`01-89` runs before `90-99`), so a typical migration sequence completes in one round. Re-detect can still surface migrations that became eligible only after the previous round in edge cases — e.g. a future framework-split migration that depends on `facts.jsonl` existing.
-3. If everything is clean, confirm "All migrations applied. Profile set is current."
+3. **If chain mode is active** (user picked "all and keep going" or invoked with `--apply-all`):
+   - If re-detect found new candidates, loop back to Step 3 and apply them **without re-prompting**.
+   - **Cycle guard**: track each round's detect output. If a round's detect output is non-empty AND identical to the previous round's (no progress was made), stop and report the stuck state with the unchanged candidate list. This protects against a buggy migration that leaves its profiles permanently eligible.
+   - Cap the chain at 10 rounds as a hard ceiling, in case the cycle guard misses an edge case. Report and stop if hit.
+4. **Otherwise** (default per-round mode):
+   - If re-detect found new candidates, return to Step 2 and prompt again.
+5. If detect is silent, confirm "All migrations applied. Profile set is current." Report the total number of rounds run when chain mode was active.
 
 ## Parallel application
 
@@ -103,6 +118,7 @@ This keeps wall-clock proportional to the slowest profile rather than the sum.
 - **Detection is the gate.** A migration only runs against profiles its `--detect` says are eligible right now. After a successful apply, the profile is no longer eligible, so re-runs are no-ops.
 - **Atomic writes.** Each per-profile transformation writes to a temp file first, then `mv` to final on success. A crash mid-apply leaves the source file intact.
 - **Never modify the source by default.** Migrations may write new files (e.g. `facts.jsonl`) but leave the legacy file (`facts.md`) in place. Deletion of legacy files is an opt-in step the user must request explicitly.
+- **Chain mode preserves per-migration verify.** `--apply-all` skips re-confirmation between rounds, not safety. Each migration's verify step still aborts the affected profile; the chain continues, and the abort is surfaced in the final report.
 
 ## Edge cases
 

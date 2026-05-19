@@ -5,7 +5,7 @@ Each `*.md` file in the `adapters/` directory defines one data-source adapter fo
 ```markdown
 ---
 adapter: [name]
-output_tag: [tag used in facts.md, e.g. slack]
+output_tag: [value of the `source` field in facts.jsonl records, e.g. slack]
 identifiers: [list of subject identifiers this adapter accepts, e.g. email, handle, display_name]
 ---
 
@@ -33,6 +33,6 @@ If any required tool is unavailable in this session, skip this adapter.
 [Common gotchas, accounts to filter out, rate-limit considerations]
 ```
 
-**Required fields:** All sections above are mandatory **except `## Discovery Recipe`**, which is optional. The `output_tag` value is what appears inside `[...]` for entries this adapter contributes to facts.md (e.g. `- [2026-03-27] [slack] ...`). The `identifiers` field tells the collector which subject fields the adapter can search by — the collector skips adapters whose identifiers it cannot resolve for the target.
+**Required fields:** All sections above are mandatory **except `## Discovery Recipe`**, which is optional. The `output_tag` value is the `source` field on every JSONL record this adapter writes to `facts.jsonl` (see `FACTS-SCHEMA.md`). For legacy `facts.md` files written before the schema, the same value appears inside `[...]` (e.g. `- [2026-03-27] [slack] ...`). The `identifiers` field tells the collector which subject fields the adapter can search by — the collector skips adapters whose identifiers it cannot resolve for the target.
 
 **Consumers:** The same adapter file is read by both `nemawashi-collect` (Collection Recipe) and `nemawashi-discover` (Discovery Recipe). Source-specific knowledge (MCP tools, identifiers, pitfalls) lives once, in one place.

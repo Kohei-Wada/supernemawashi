@@ -37,7 +37,7 @@ Section keywords (case-insensitive):
 |---------|----------------|
 | `profile` / no keyword | `profile.md` (default) |
 | `relationship` / `関係` | `relationship.md` |
-| `facts` / `事実` | `facts.md` |
+| `facts` / `事実` | `facts.jsonl` + `facts.md` (merged, see below) |
 | `contradictions` / `矛盾` | `contradictions.md` |
 | `do/don't` / `strategy` / `戦略` | `## Communication Strategy` section of `profile.md` |
 | `basic` / `info` | `## Basic Info` section of `profile.md` |
@@ -60,7 +60,7 @@ Section keywords (case-insensitive):
 1. For each directory in `PROFILE_DIR/`:
    - Read frontmatter from `profile.md` (`name`, `role`, `last_updated`).
    - Read the `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` comment if present.
-   - Count lines in `facts.md` matching `- [YYYY-MM-DD]` for current fact count.
+   - Count current facts: non-empty lines in `facts.jsonl` (if present) + lines in `facts.md` matching `^- \[[0-9]{4}-[0-9]{2}(-[0-9]{2})?\]` (if present). Sum both — profiles mid-migration may have content in both files.
    - Note presence of `contradictions.md` and whether it has content beyond the header.
 2. Display as a table:
 
@@ -79,19 +79,23 @@ Section keywords (case-insensitive):
 1. Read `profile.md` and render it as-is. Do NOT summarize or paraphrase — the user wants to see the actual content.
 2. After `profile.md`, append a short footer:
    > Also available: `<name> relationship`, `<name> facts`, `<name> contradictions`.
-3. If `profile.md` is missing but `facts.md` exists, render `facts.md` and note "No analyzed profile yet — run `nemawashi-analyze` for <name>."
+3. If `profile.md` is missing but fact data exists (`facts.jsonl` and/or `facts.md`), render the facts using the same merged view as the section operation below, and note "No analyzed profile yet — run `nemawashi-analyze` for <name>."
 
 #### Section operation
 
-1. If the section maps to a file (`relationship.md` / `facts.md` / `contradictions.md`): render the whole file.
-2. If the section maps to a `## <heading>` inside `profile.md`: extract lines from that `## <heading>` up to (but not including) the next `## ` heading. Render that block.
-3. If the section doesn't exist in the file: report "Section '<name>' not found in <person>'s profile."
+1. If the section maps to a single file (`relationship.md` / `contradictions.md`): render the whole file.
+2. If the section is `facts`: read both `facts.jsonl` (if present) and `facts.md` (if present) and render a merged chronological view:
+   - For each `facts.jsonl` record, format as: `- [YYYY-MM-DD] [<source>] <content> (<url>)` — omit the URL block if absent. Channel/repository/meeting_title go in parentheses after content when present.
+   - For each `facts.md` line, render as-is (already in markdown bullet form).
+   - Sort the merged list by date descending.
+3. If the section maps to a `## <heading>` inside `profile.md`: extract lines from that `## <heading>` up to (but not including) the next `## ` heading. Render that block.
+4. If the section doesn't exist in the file: report "Section '<name>' not found in <person>'s profile."
 
 ### Step 4: Handle Empty / Missing States
 
 - **No profiles at all**: "No profiles found in `PROFILE_DIR/`. Run `nemawashi-collect` or `nemawashi-discover` to start."
 - **Profile dir exists but is empty**: same as above for that person.
-- **`facts.md` is missing**: facts count = 0.
+- **Neither `facts.jsonl` nor `facts.md` is present**: facts count = 0.
 - **`contradictions.md` has only a header (no entries)**: report "—" in the list view; in section view, render it as-is so the user sees it's empty.
 
 ## Output Style
@@ -107,7 +111,7 @@ Section keywords (case-insensitive):
 ## Edge Cases
 
 - Profile name contains spaces or non-ASCII: use exact-match path resolution; do not URL-encode.
-- User asks for a profile that exists but `profile.md` is missing (only `facts.md`): render `facts.md` and suggest running `nemawashi-analyze`.
+- User asks for a profile that exists but `profile.md` is missing (only fact data — `facts.jsonl` and/or `facts.md`): render the merged facts view and suggest running `nemawashi-analyze`.
 - User asks for a section that doesn't exist (e.g., `alice strategy` when there's no Communication Strategy yet): report missing and suggest running `nemawashi-analyze`.
 - Ambiguous fuzzy match: list candidates and ask. Do not guess.
 

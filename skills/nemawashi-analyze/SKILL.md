@@ -23,20 +23,26 @@ A profile must exist at `PROFILE_DIR/<person-name>/profile.md`. If it doesn't, t
 
 Read the following files for the target person:
 - `PROFILE_DIR/<person-name>/profile.md`
-- `PROFILE_DIR/<person-name>/facts.md` (if exists)
+- `PROFILE_DIR/<person-name>/facts.jsonl` (newer profiles)
+- `PROFILE_DIR/<person-name>/facts.md` (legacy profiles)
 - `PROFILE_DIR/<person-name>/relationship.md` (if exists)
+
+If both `facts.jsonl` and `facts.md` exist for the same profile, read both and merge entries (sort by date descending). New profiles only have `facts.jsonl`; legacy profiles may still have only `facts.md` until a future migration consolidates them.
 
 ### Step 2: Behavioral Signal Extraction
 
-Read all `*.md` files in the `frameworks/` directory (relative to this skill). For each entry in facts.md, extract **behavioral signals** — not "what happened" but "what this reveals about the person psychologically." Tag each signal with relevant framework dimensions using each framework file's Reference Table and Signal Tags.
+Read all `*.md` files in the `frameworks/` directory (relative to this skill). For each fact entry from Step 1, extract **behavioral signals** — not "what happened" but "what this reveals about the person psychologically." Tag each signal with relevant framework dimensions using each framework file's Reference Table and Signal Tags.
 
-Facts entries follow the standard format: `- [YYYY-MM-DD] [source] Description text (url)`. Parse each line matching this pattern as one fact entry.
+Fact entries come from two possible files:
 
-**Example:**
+- **`facts.jsonl`** — one JSON object per line. Required fields: `date`, `source`, `content`. Optional: `url`, `channel`, `repository`, `meeting_title`, `participants`, `tags`. Parse each line with a JSON parser. Schema: `../nemawashi-collect/FACTS-SCHEMA.md`.
+- **`facts.md`** (legacy) — one entry per line in the form `- [YYYY-MM-DD] [source] Description text (url)`, with month-precision dates (`[YYYY-MM]`) also valid. Source-tag position has minor variants in older profiles — tolerate any leading `[source]` token after the date.
+
+**Example (jsonl):**
 
 ```
-facts.md entry:
-- [2026-03-27] [slack] Rear-guard criticism to Alice: 'Doesn't the alert being triggered == response needed?' (https://slack.com/archives/C123/p456)
+facts.jsonl entry:
+{"date":"2026-03-27","source":"slack","content":"Rear-guard criticism to Alice: 'Doesn't the alert being triggered == response needed?'","url":"https://acme.slack.com/archives/C123/p456","channel":"#engineering"}
 
 Signals:
 - Withholds information until subordinate acts, then criticizes [defense: info-withholding]

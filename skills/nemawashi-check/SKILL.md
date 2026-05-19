@@ -18,7 +18,10 @@ Check analysis staleness across all profiles and triage which ones need re-analy
 
 1. List all directories in `PROFILE_DIR/`
 2. For each profile directory, read `profile.md` and extract the `<!-- analyzed: YYYY-MM-DD, facts_count: N -->` HTML comment
-3. Read `facts.md` and count the actual number of fact entries (lines matching the pattern `- [YYYY-MM-DD] [source]`)
+3. Count current fact entries across **both** files (newer profiles only have the jsonl, legacy profiles only have the md, profiles mid-migration have both):
+   - `facts.jsonl`: count non-empty lines (each line is one record).
+   - `facts.md`: count lines matching `^- \[[0-9]{4}-[0-9]{2}(-[0-9]{2})?\] \[` (both `[YYYY-MM-DD]` and `[YYYY-MM]` prefixes are valid).
+   - The sum is `current facts count`.
 4. Record: profile name, last analyzed date, analyzed facts count, current facts count
 
 If a profile has no `<!-- analyzed: -->` comment, mark it as "Never Analyzed."
@@ -32,7 +35,7 @@ Classify each profile into one of four categories:
 | **Never Analyzed** | No `<!-- analyzed: -->` comment in profile.md | High |
 | **Stale** | Last analyzed > 7 days ago OR current facts count > analyzed facts count | Medium |
 | **Fresh** | Last analyzed within 7 days AND no new facts | Low (no action) |
-| **No Data** | Profile has profile.md but no facts.md | None (run nemawashi-collect first) |
+| **No Data** | Profile has profile.md but neither facts.jsonl nor facts.md | None (run nemawashi-collect first) |
 
 ### Step 3: Present Dashboard
 
@@ -69,7 +72,7 @@ After all agents return, show an updated dashboard summary.
 
 - **No profiles exist**: Report that no profiles were found. Suggest running nemawashi-collect or nemawashi-discover first.
 - **All profiles fresh**: Report that everything is up to date. No action needed.
-- **Profile has profile.md but no facts.md**: Mark as "No data collected — run nemawashi-collect first." Do not suggest re-analysis.
+- **Profile has profile.md but neither facts.jsonl nor facts.md**: Mark as "No data collected — run nemawashi-collect first." Do not suggest re-analysis.
 - **Analyzed comment exists but is malformed**: Treat as "Never Analyzed" and note the parsing issue.
 
 ## Key Principles

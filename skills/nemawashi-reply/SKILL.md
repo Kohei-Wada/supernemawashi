@@ -29,7 +29,7 @@ Determine:
 Read the recipient's profile from `PROFILE_DIR/<person-name>/`:
 - `profile.md` — Behavioral patterns and communication strategy
 - `relationship.md` — User's relationship and approach strategy
-- `facts.md` — Recent interactions (for context continuity)
+- `facts.jsonl` (newer) / `facts.md` (legacy) — Recent interactions (for context continuity); read both if both exist
 - `contradictions.md` — Known contradictions (useful for difficult conversations)
 
 **If no profile exists:** Tell the user and offer two options:

@@ -1,38 +1,91 @@
 # Output Format
 
+The analyze flow produces three kinds of files per profile:
+
+```
+PROFILE_DIR/<name>/
+  profile.md                  Slim index: Basic Info + Core Pattern + Framework Summary
+  contradictions.md           Cross-framework inconsistencies
+  frameworks/
+    <slug>.md                 One per framework — classification + evidence + situation-indexed rules
+```
+
 ## profile.md
 
-Write/update the following sections in profile.md. Preserve all existing sections (Basic Info, Communication Patterns, Active Channels, etc.) — only add/replace the sections below.
+The top-level profile is now a **slim index**. The per-framework details (classification rationale, evidence, situation-indexed rules) live in `frameworks/<slug>.md`. The profile keeps the parts a human writes manually (Basic Info, Communication Patterns, Active Channels, Work Patterns) plus the cross-framework synthesis.
 
 ```markdown
-## Behavioral Patterns
+---
+name: <Full Name>
+role: <Role>
+last_updated: YYYY-MM-DD
+---
 
-### Core Pattern
-[1-3 sentence synthesis across all frameworks]
+# <Full Name>
 
-### Framework Classifications
+## Basic Info
+[Preserved across analyses — manual content. Examples: organization, team, reporting line, time zone.]
 
-| Framework | Classification | Confidence | Evidence |
+## Communication Patterns
+[Preserved across analyses — manual notes on language preferences, response cadence, channel norms.]
+
+## Active Channels
+[Preserved — Slack channels, email threads, repos where this person is active.]
+
+## Work Patterns
+[Preserved — meeting cadence, focus hours, escalation patterns.]
+
+## Core Pattern
+[1-3 sentence synthesis across all frameworks — the deepest insight about what drives this person. Regenerated on every analyze.]
+
+## Framework Summary
+
+| Framework | Classification | Confidence | Details |
 |---|---|---|---|
-| Defense Mechanisms | [dominant mechanisms] | Confirmed/Hypothesis | [brief evidence summary] |
-| Conflict Mode (TKI) | [mode(s), context if varies] | ... | ... |
-| Ego States (TA) | [states per relationship] | ... | ... |
-| Core Motivators | [SDT/McClelland needs] | ... | ... |
-| Cognitive Biases | [top biases] | ... | ... |
-| Attachment Style | [style] | ... | ... |
+| Defense Mechanisms | [classification text from frameworks/defense-mechanisms.md] | Confirmed | [frameworks/defense-mechanisms.md](frameworks/defense-mechanisms.md) |
+| Conflict Mode (TKI) | ... | ... | [frameworks/thomas-kilmann-tki.md](frameworks/thomas-kilmann-tki.md) |
+| Ego States (TA) | ... | ... | [frameworks/transactional-analysis-ta.md](frameworks/transactional-analysis-ta.md) |
+| Core Motivators | ... | ... | [frameworks/core-motivators.md](frameworks/core-motivators.md) |
+| Cognitive Biases | ... | ... | [frameworks/cognitive-biases.md](frameworks/cognitive-biases.md) |
+| Attachment Style | ... | Hypothesis | [frameworks/attachment-style.md](frameworks/attachment-style.md) |
+
+### Data Gaps
+- [ ] [Missing dimension or situation]: [what to collect and how]
 
 <!-- analyzed: YYYY-MM-DD, facts_count: N -->
+```
 
-## Communication Strategy
+**Important**: profile.md no longer carries the full Framework Classifications table with evidence summaries, nor the situation-indexed Communication Strategy block. Those move into the per-framework files. Consumers (`nemawashi-show`, `nemawashi-reply`) read the framework files directly when they need that detail.
+
+## frameworks/&lt;slug&gt;.md
+
+One per framework. The orchestrator dispatches one agent per framework definition under `skills/nemawashi-analyze/frameworks/`, and each agent writes its own output file under `PROFILE_DIR/<name>/frameworks/<slug>.md` with the matching `<slug>`.
+
+```markdown
+---
+framework: <slug>
+classification: <one-line classification text>
+confidence: Confirmed | Hypothesis | Data Gap
+last_updated: YYYY-MM-DD
+---
+
+# <Framework display name>
+
+## Classification
+[1-3 sentences expanding the one-line classification — what pattern, in what contexts, with what intensity.]
+
+## Evidence
+- [YYYY-MM-DD] [source] <fact citation> → <signal explanation> [signal: <tag>]
+- ...
+
+## Rules
 
 ### When Requesting
 **DO:**
-- [Action] — [reasoning]
-  [framework: tag + evidence]
+- [Action] — [reasoning] [signal: <tag>]
 
 **DON'T:**
-- [Action] — [reasoning]
-  [framework: tag + evidence]
+- [Action] — [reasoning] [signal: <tag>]
 
 ### During Conflict
 **DO:** ...
@@ -45,14 +98,19 @@ Write/update the following sections in profile.md. Preserve all existing section
 ### Routine Collaboration
 **DO:** ...
 **DON'T:** ...
-
-### Data Gaps
-- [ ] [Missing dimension or situation]: [what to collect and how]
 ```
+
+**Special cases**:
+
+- **Data Gap classification** — omit the `## Rules` section entirely and replace with a `## Data Gap` section explaining what evidence would be needed.
+- **Hypothesis confidence** — rules are included but each rule line is tagged `(hypothesis)`. The classification frontmatter still says `Hypothesis`.
+- **No applicable rule for a situation** — write `- (no framework-specific rule for this situation)` under the relevant DO or DON'T heading rather than fabricating one.
+
+**Multi-framework rules**: Some rules cite a primary + secondary framework (e.g. `[signal: info-withholding + TKI: competing]`). Place the rule under its **primary** framework's file. The secondary framework appears in the bracket annotation only — it does not duplicate the rule.
 
 ## contradictions.md
 
-Write/update the following in `PROFILE_DIR/<person-name>/contradictions.md`:
+Cross-framework inconsistencies — verbal contradictions, say-do gaps, audience-dependent behavior, temporal reversals. The schema is unchanged from prior versions.
 
 ```markdown
 ---
@@ -103,3 +161,7 @@ No contradictions detected with current data. Re-run after collecting more facts
 
 <!-- analyzed: YYYY-MM-DD, facts_count: N -->
 ```
+
+## Atomic writes
+
+All files (`profile.md`, `frameworks/<slug>.md`, `contradictions.md`) are written via temp file + `mv`. A crash during analysis leaves the prior version intact.

@@ -48,11 +48,12 @@ All operational skills are verb-first under the `nemawashi-` prefix.
 | Skill | What it does |
 |-------|-------------|
 | `nemawashi-collect` | Gathers data from MCP sources (Slack, Gmail, Calendar, GitHub, and any source you add via the [adapter pattern](skills/nemawashi-collect/ADAPTER-CONTRACT.md)) and writes structured profiles |
-| `nemawashi-analyze` | Classifies behavioral patterns using 6 psychological frameworks and generates situation-indexed DO/DON'T rules |
-| `nemawashi-show` | Read-only view of profiles — list all, show one person, or show a specific section |
+| `nemawashi-analyze` | Dispatches one agent per psychological framework in parallel and writes a per-framework analysis file plus a slim profile index |
+| `nemawashi-show` | Read-only view of profiles — list all, show one person, drill into a single framework, or get the aggregated DO/DON'T rules by situation |
 | `nemawashi-discover` | Scans every adapter-supported source to find people you interact with but haven't profiled yet |
 | `nemawashi-check` | Dashboard showing which profiles are stale and need re-analysis |
-| `nemawashi-reply` | Crafts 2-3 draft messages tailored to the recipient's psychological profile |
+| `nemawashi-reply` | Crafts 2-3 draft messages tailored to the recipient's psychological profile, loading only the framework files relevant to the current situation |
+| `nemawashi-migrate` | Upgrades legacy profile data to the current on-disk format. Self-discovering registry — drop a `.sh`/`.md` pair under `skills/nemawashi-migrate/migrations/` to add a new migration |
 | `using-supernemawashi` | Entry point — routes requests to the appropriate skill |
 
 ### Psychological Frameworks
@@ -68,21 +69,34 @@ The `nemawashi-analyze` skill uses these established frameworks to move beyond s
 | Cognitive Biases | Decision-making patterns — status quo bias, authority bias, IKEA effect, etc. |
 | Attachment Style | Trust and delegation patterns — secure, anxious, avoidant, or disorganized |
 
-Each classification produces concrete rules: "This person defaults to rationalization under criticism. DO: validate their reasoning first, then redirect. DON'T: argue against the justification directly."
+Each classification produces concrete rules: "This person defaults to rationalization under criticism. DO: validate their reasoning first, then redirect. DON'T: argue against the justification directly." Each framework's classification, evidence, and rules live in their own file (`frameworks/<slug>.md`), so adding a new signal to one framework rewrites one file rather than a monolithic profile.
 
 ### Profile Data Structure
 
 All data is stored locally at `~/.local/share/supernemawashi/profiles/<person-name>/`:
 
 ```
-profile.md          # Basic info + psychological analysis + communication strategy
-relationship.md     # Your relationship context and approach strategies
-facts.jsonl         # Chronological record of observed behaviors (newer profiles)
-facts.md            # Same record in legacy format (older profiles)
-contradictions.md   # Detected inconsistencies (useful for difficult conversations)
+profile.md                       # Slim index: Basic Info + Core Pattern + Framework Summary table
+relationship.md                  # Your relationship context and approach strategies
+facts.jsonl                      # Chronological record of observed behaviors (canonical)
+facts.md                         # Same record in legacy format (older profiles, dual-read during migration)
+contradictions.md                # Detected inconsistencies (useful for difficult conversations)
+frameworks/                      # One file per psychological framework
+  defense-mechanisms.md          #   - Classification + Evidence + DO/DON'T rules per situation
+  thomas-kilmann-tki.md          #   - (same structure)
+  transactional-analysis-ta.md
+  core-motivators.md
+  cognitive-biases.md
+  attachment-style.md
 ```
 
-Consumers read both `facts.jsonl` and `facts.md` if both exist (dual-read transition). The canonical JSONL schema is at [`skills/nemawashi-collect/FACTS-SCHEMA.md`](skills/nemawashi-collect/FACTS-SCHEMA.md).
+The split layout means consumers load only what the situation needs. `nemawashi-reply` for a conflict reads `profile.md` + `frameworks/thomas-kilmann-tki.md` + `frameworks/defense-mechanisms.md`, not every framework. `nemawashi-show <name> tki` opens just the TKI file. Cross-profile queries (e.g. "everyone competing under stress") grep one path per framework.
+
+The canonical JSONL schema is at [`skills/nemawashi-collect/FACTS-SCHEMA.md`](skills/nemawashi-collect/FACTS-SCHEMA.md). Both `facts.jsonl` and `facts.md` are read if both exist; new profiles only have `facts.jsonl`.
+
+### Upgrading between versions
+
+`nemawashi-migrate` orchestrates on-disk format upgrades. Each migration is a `.sh` (`--detect`, lists eligible profiles) + `.md` (LLM apply contract) pair under `skills/nemawashi-migrate/migrations/`. The filename prefix encodes phase: `01-89` for forward migrations (produce or extend the canonical format), `90-99` for cleanup (delete redundant legacy artifacts). Run `/supernemawashi:nemawashi-migrate` to see pending migrations; pass `--apply-all` to chain rounds to completion.
 
 ## Philosophy
 

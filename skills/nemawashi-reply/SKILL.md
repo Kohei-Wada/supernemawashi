@@ -24,25 +24,41 @@ Determine:
 - **Where** will this be sent? (Slack, email, in-person, etc.)
 - **What outcome** does the user want?
 
-### Step 2: Load Profile
+### Step 2: Load Profile (selective)
 
-Read the recipient's profile from `PROFILE_DIR/<person-name>/`:
-- `profile.md` — Behavioral patterns and communication strategy
-- `relationship.md` — User's relationship and approach strategy
-- `facts.jsonl` (newer) / `facts.md` (legacy) — Recent interactions (for context continuity); read both if both exist
-- `contradictions.md` — Known contradictions (useful for difficult conversations)
+Read the recipient's profile from `PROFILE_DIR/<person-name>/`. The profile is split into a slim index (`profile.md`) plus per-framework files (`frameworks/<slug>.md`). Load only what the current situation needs:
+
+**Always load:**
+- `profile.md` — Basic Info, Core Pattern, Framework Summary (the synthesis).
+- `relationship.md` — User's relationship and approach strategy.
+- `contradictions.md` — Known contradictions (relevant for difficult conversations; cheap to load).
+
+**Conditionally load** (per Step 3's situation mapping):
+
+| Situation | Always load | Add if signals suggest |
+|---|---|---|
+| **When Requesting** | `frameworks/core-motivators.md`, `frameworks/cognitive-biases.md` | `frameworks/transactional-analysis-ta.md` (status-charged ask) |
+| **During Conflict** | `frameworks/thomas-kilmann-tki.md`, `frameworks/defense-mechanisms.md` | `frameworks/transactional-analysis-ta.md` (CP↔AC dynamic), `frameworks/attachment-style.md` (trust rupture) |
+| **When Reporting** | `frameworks/defense-mechanisms.md`, `frameworks/core-motivators.md` | `frameworks/cognitive-biases.md` (loss-aversive recipient) |
+| **Routine Collaboration** | `frameworks/transactional-analysis-ta.md`, `frameworks/core-motivators.md` | `frameworks/attachment-style.md` (delegation/trust question) |
+
+If a `frameworks/<slug>.md` does not exist or its frontmatter says `confidence: Data Gap`, skip it.
+
+**Recent facts.** Read only the most-recent fact entries (last ~10) for context continuity — the framework files already encode the analysis. Read `facts.jsonl` (newer) / `facts.md` (legacy); if both exist, read both and merge.
 
 **If no profile exists:** Tell the user and offer two options:
-1. Run nemawashi-collect first for a data-informed reply
-2. Proceed without a profile (generic advice only)
+1. Run `nemawashi-collect` first for a data-informed reply.
+2. Proceed without a profile (generic advice only).
 
-**If profile is stale** (last_updated > 30 days): Suggest updating, but proceed with existing data if user wants a quick reply.
+**If `frameworks/` is missing but `profile.md` exists** (pre-split profile): tell the user to run `nemawashi-analyze` (or `/supernemawashi:nemawashi-migrate` to bulk-upgrade), then proceed loading `profile.md` only.
+
+**If profile is stale** (`last_updated` > 30 days): suggest updating, but proceed with existing data if the user wants a quick reply.
 
 ### Step 3: Analyze the Situation
 
-**Map to situation category.** Determine which of the 4 situation categories (see using-supernemawashi → Situation Categories) applies — **When Requesting**, **During Conflict**, **When Reporting**, or **Routine Collaboration** — by reading the matching rules from the profile's Communication Strategy section.
+**Map to situation category.** Determine which of the 4 situation categories (see using-supernemawashi → Situation Categories) applies — **When Requesting**, **During Conflict**, **When Reporting**, or **Routine Collaboration**.
 
-Read the DO/DON'T rules for that situation category. These rules are backed by psychological framework analysis (defense mechanisms, conflict modes, ego states, motivators, cognitive biases) — use the framework tags to explain your reasoning to the user.
+Read the DO/DON'T rules for that situation category **from each loaded `frameworks/<slug>.md` file's `## Rules → ### <situation>` block**. These rules are backed by psychological framework analysis (defense mechanisms, conflict modes, ego states, motivators, cognitive biases) — use the per-rule `[signal: ...]` tags to explain your reasoning to the user. The cross-framework synthesis is in `profile.md → Core Pattern`.
 
 Based on profile data, also assess:
 - **Recipient's likely reaction** — Given their behavioral patterns and framework classifications, how will they probably respond to this topic?

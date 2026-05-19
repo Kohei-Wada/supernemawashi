@@ -20,10 +20,10 @@ using_skill_escaped=$(escape_for_json "$using_skill_content")
 session_context="<EXTREMELY_IMPORTANT>\nYou have supernemawashi.\n\n**Below is the full content of your 'supernemawashi:using-supernemawashi' skill - your introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n${using_skill_escaped}\n</EXTREMELY_IMPORTANT>"
 
 # Append a migration nudge if any profile data is eligible for a format
-# upgrade. The detect script iterates scripts/migrations/*.sh --detect and
-# prints one line per migration with candidates; if it stays silent, the
-# profile set is already current and no nudge is added.
-migrate_detect="${PLUGIN_ROOT}/scripts/migrate-detect.sh"
+# upgrade. The detect script iterates its sibling migrations/*.sh --detect
+# and prints one line per migration with candidates; if it stays silent,
+# the profile set is already current and no nudge is added.
+migrate_detect="${PLUGIN_ROOT}/skills/nemawashi-migrate/detect.sh"
 if [ -x "$migrate_detect" ]; then
     migrate_output=$("$migrate_detect" 2>/dev/null || true)
     if [ -n "$migrate_output" ]; then

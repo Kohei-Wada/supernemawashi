@@ -16,7 +16,7 @@ Triage profiles along two axes — **analysis freshness** (is the recorded analy
 
 ### Step 1: Run the helper script
 
-Invoke `scripts/nemawashi-check.sh` (relative to the plugin root — the file lives alongside this skill in the same plugin). No arguments needed; it defaults to `~/.local/share/supernemawashi/profiles`.
+Invoke `./check.sh` (relative to the plugin root — the file lives alongside this skill in the same plugin). No arguments needed; it defaults to `~/.local/share/supernemawashi/profiles`.
 
 The script is the **single source of truth** for classification. Do not re-derive `analysis_status` or `activity_status` from raw file contents in this skill — the script already merges facts.jsonl + facts.md, handles month-precision dates, and computes the inactivity window. Keeping the logic in one place prevents drift between the bash and the prose.
 
@@ -103,7 +103,7 @@ No framework details, no evidence quotes, no process narration. One line only.
 
 `nemawashi-analyze` is local-file-only (no MCP calls), so parallelism is unconstrained — fan out across all selected profiles at once.
 
-After all subagents return, summarize as a short table (one row per re-analyzed profile, columns matching the one-line shape above) and re-run `scripts/nemawashi-check.sh` to confirm the updated freshness state.
+After all subagents return, summarize as a short table (one row per re-analyzed profile, columns matching the one-line shape above) and re-run `./check.sh` to confirm the updated freshness state.
 
 ## Edge Cases
 
@@ -114,7 +114,7 @@ After all subagents return, summarize as a short table (one row per re-analyzed 
 
 ## Key Principles
 
-- **Script is canonical** — classification logic lives in `scripts/nemawashi-check.sh`. This skill renders and orchestrates; it does not reclassify.
+- **Script is canonical** — classification logic lives in `./check.sh`. This skill renders and orchestrates; it does not reclassify.
 - **Two axes, not one** — analysis staleness and subject inactivity are independent signals with different remediations. A Dormant subject doesn't need re-analysis even if its analysis is old.
 - **Parallel re-analysis** — when the user opts in, dispatch one agent per Needs Re-analysis row in parallel using the template above. Don't auto-batch Inactive or Dormant rows.
 - **Uniform dispatch prompts** — never improvise per-row prompts when bulk re-analyzing; the template is the contract that keeps subagent reports aggregable.

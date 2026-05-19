@@ -18,6 +18,7 @@ All skills are verb-first under the `nemawashi-` prefix.
 | `supernemawashi:nemawashi-show` | User wants to view, list, or display existing profiles (read-only) |
 | `supernemawashi:nemawashi-discover` | User wants to find people they interact with but haven't profiled yet |
 | `supernemawashi:nemawashi-check` | User wants to check which profiles are stale or need re-analysis |
+| `supernemawashi:nemawashi-note` | User wants to manually record one observation about a person — typically from an off-MCP interaction (1:1, phone, hallway) that adapters can't see |
 | `supernemawashi:nemawashi-reply` | User needs help replying to someone or deciding what to say |
 
 Updating a profile is normally a 2-step pipeline: **nemawashi-collect** (pull from MCP sources — slow, rate-limited) → **nemawashi-analyze** (local-only — fast). They are kept as separate skills so re-analysis without re-collection is cheap.
@@ -44,6 +45,9 @@ When the request is ambiguous, use this decision tree:
 
 "discover people" / "who am I missing?"
   → nemawashi-discover
+
+"note that X said / did Y" / "メモっといて Xが…" / "1:1 で X が…"
+  → nemawashi-note (manual one-line fact entry, off-MCP observation)
 
 "how should I reply to X?" / "what should I say?"
   → nemawashi-reply

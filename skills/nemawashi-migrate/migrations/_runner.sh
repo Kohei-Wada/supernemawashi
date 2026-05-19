@@ -1,31 +1,25 @@
 #!/usr/bin/env bash
-# lib/migration.sh — shared helpers for migration scripts and the
-# `nemawashi-check` freshness scanner.
+# shellcheck disable=SC1091
+# _runner.sh — the --detect harness shared by every migration script.
 #
-# Sourced from `skills/nemawashi-migrate/migrations/*.sh` and
-# `skills/nemawashi-check/check.sh`. Not executable on its own.
+# Sourced (not executed) by every `NN-*.sh` migration in this directory.
+# The leading underscore + non-executable mode tell `detect.sh` and any
+# future tooling to skip this file.
 #
-# Helpers:
-#   - PROFILE_DIR              — env-overridable path to the profile dir
-#   - extract_md_dates <file>  — YYYY-MM(-DD)? dates from facts.md bullets
-#   - extract_jsonl_dates <f>  — YYYY-MM(-DD)? dates from facts.jsonl records
+# Sourcing convention:
+#
+#   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+#   . "$SCRIPT_DIR/_runner.sh"
+#
+# Re-exports (via lib/facts.sh): PROFILE_DIR, extract_md_dates, extract_jsonl_dates.
+#
+# Defines:
 #   - migration_main <id> <predicate-fn> [args...]
 #       Parses --detect, iterates PROFILE_DIR/*/, calls predicate-fn per dir,
 #       prints "<id>: N profile(s) eligible" if N > 0.
 
-PROFILE_DIR="${PROFILE_DIR:-$HOME/.local/share/supernemawashi/profiles}"
-
-# Extract YYYY-MM(-DD)? dates from facts.md bullets of the form `- [YYYY-MM(-DD)?]`.
-extract_md_dates() {
-  grep -oE '^- \[[0-9]{4}-[0-9]{2}(-[0-9]{2})?\]' "$1" 2>/dev/null \
-    | grep -oE '[0-9]{4}-[0-9]{2}(-[0-9]{2})?'
-}
-
-# Extract YYYY-MM(-DD)? dates from facts.jsonl records (the `"date":"..."` field).
-extract_jsonl_dates() {
-  grep -oE '"date"[[:space:]]*:[[:space:]]*"[0-9]{4}-[0-9]{2}(-[0-9]{2})?"' "$1" 2>/dev/null \
-    | grep -oE '[0-9]{4}-[0-9]{2}(-[0-9]{2})?'
-}
+_RUNNER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$_RUNNER_DIR/../../../lib/facts.sh"
 
 # Standard --detect harness shared by every migration.
 #

@@ -23,5 +23,10 @@ MIGRATIONS_DIR="${SCRIPT_DIR}/migrations"
 for migration in "$MIGRATIONS_DIR"/*.sh; do
   [ -f "$migration" ] || continue
   [ -x "$migration" ] || continue
+  # Files prefixed with `_` are shared libs sourced by migrations, not
+  # migrations themselves. Skip even if accidentally chmod +x.
+  case "$(basename "$migration")" in
+    _*) continue ;;
+  esac
   "$migration" --detect 2>/dev/null || true
 done

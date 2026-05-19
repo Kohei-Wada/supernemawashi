@@ -40,14 +40,11 @@ last_updated: YYYY-MM-DD
 
 ## Framework Summary
 
+One row per framework registered in [`FRAMEWORKS.md`](FRAMEWORKS.md), in registry order. Use the registry's "Display name" as the row label.
+
 | Framework | Classification | Confidence | Details |
 |---|---|---|---|
-| Defense Mechanisms | [classification text from frameworks/defense-mechanisms.md] | Confirmed | [frameworks/defense-mechanisms.md](frameworks/defense-mechanisms.md) |
-| Conflict Mode (TKI) | ... | ... | [frameworks/thomas-kilmann-tki.md](frameworks/thomas-kilmann-tki.md) |
-| Ego States (TA) | ... | ... | [frameworks/transactional-analysis-ta.md](frameworks/transactional-analysis-ta.md) |
-| Core Motivators | ... | ... | [frameworks/core-motivators.md](frameworks/core-motivators.md) |
-| Cognitive Biases | ... | ... | [frameworks/cognitive-biases.md](frameworks/cognitive-biases.md) |
-| Attachment Style | ... | Hypothesis | [frameworks/attachment-style.md](frameworks/attachment-style.md) |
+| [display name] | [classification text from `frameworks/<slug>.md`] | Confirmed \| Hypothesis \| Data Gap | [frameworks/&lt;slug&gt;.md](frameworks/&lt;slug&gt;.md) |
 
 ### Data Gaps
 - [ ] [Missing dimension or situation]: [what to collect and how]

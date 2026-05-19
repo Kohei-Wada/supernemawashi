@@ -43,6 +43,13 @@ repos:
         pass_filenames: false
         files: '^(skills/using-supernemawashi/SKILL\.md|skills/nemawashi-analyze/assertion\.sh|scripts/check-situation-categories\.sh)$'
 
+      - id: check-frameworks
+        name: framework registry and definitions agree on slug/display/tier
+        entry: scripts/check-frameworks.sh
+        language: script
+        pass_filenames: false
+        files: '^(skills/nemawashi-analyze/FRAMEWORKS\.md|skills/nemawashi-analyze/frameworks/.*\.md|scripts/check-frameworks\.sh)$'
+
       - id: check-no-internal-names
         name: scan staged additions against the local denylist
         entry: scripts/check-no-internal-names.sh

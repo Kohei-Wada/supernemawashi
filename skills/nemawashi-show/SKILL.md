@@ -52,6 +52,8 @@ Section keywords (case-insensitive):
 | `attachment` / `愛着` | `frameworks/attachment-style.md` |
 | `do/don't` / `strategy` / `rules` / `戦略` | Aggregated **Rules** section across all `frameworks/*.md`, grouped by situation category. See Aggregated rules view below. |
 
+The framework slugs on the right (`defense-mechanisms`, `thomas-kilmann-tki`, …) are the canonical set defined in [`skills/nemawashi-analyze/FRAMEWORKS.md`](../nemawashi-analyze/FRAMEWORKS.md); adding a new framework means adding a row above plus an alias keyword for it.
+
 ### Step 2: Resolve the Person (when applicable)
 
 The common case is "user typed an exact directory name" — go straight to the target file. Only fall back to fuzzy resolution when the direct read misses.

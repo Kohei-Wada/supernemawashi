@@ -92,7 +92,7 @@ Re-analyze the supernemawashi profile for "${name}".
 Today: ${today}
 Profile path: ~/.local/share/supernemawashi/profiles/${name}/
 
-Invoke the `supernemawashi:nemawashi-analyze` skill on this profile end-to-end (Steps 1-7 of that skill). It reads profile.md, facts.jsonl, facts.md, and relationship.md, then rewrites profile.md / contradictions.md with refreshed framework classifications and DO/DON'T rules.
+Invoke the `supernemawashi:nemawashi-analyze` skill on this profile end-to-end. The skill dispatches one `framework-analyzer` agent per framework definition in parallel, then synthesizes the slim `profile.md` (Core Pattern + Framework Summary) plus `contradictions.md`. Per-framework details and situation-indexed DO/DON'T rules land in `PROFILE_DIR/${name}/frameworks/<slug>.md`.
 
 When done, return ONLY a one-line summary in this exact shape:
 

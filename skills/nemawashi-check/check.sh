@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 # nemawashi-check.sh — Check freshness and subject-activity across all profiles
 # Usage: nemawashi-check.sh [profiles_dir]
 # Output: TSV with columns:
@@ -15,6 +16,9 @@
 #   activity_status: active (<30d) | inactive (30-90d) | dormant (>90d) | unknown (no facts)
 
 set -uo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/../nemawashi-migrate/migrations/_lib.sh"
 
 PROFILES_DIR="${1:-$HOME/.local/share/supernemawashi/profiles}"
 TODAY=$(date +%Y-%m-%d)
@@ -56,7 +60,7 @@ for dir in "$PROFILES_DIR"/*/; do
     current_facts=$((current_facts + jsonl_count))
   fi
   if [ -f "$facts_md" ]; then
-    md_count=$(grep -cE '^- \[[0-9]{4}-[0-9]{2}(-[0-9]{2})?\]' "$facts_md" 2>/dev/null || true)
+    md_count=$(extract_md_dates "$facts_md" | wc -l)
     [ -z "$md_count" ] && md_count=0
     current_facts=$((current_facts + md_count))
   fi
@@ -66,8 +70,8 @@ for dir in "$PROFILES_DIR"/*/; do
   # makes day-precision dates win ties with their own month — desired behavior.
   latest_fact_date="-"
   {
-    [ -f "$facts_jsonl" ] && grep -oE '"date"[[:space:]]*:[[:space:]]*"[0-9]{4}-[0-9]{2}(-[0-9]{2})?"' "$facts_jsonl" 2>/dev/null | grep -oE '[0-9]{4}-[0-9]{2}(-[0-9]{2})?'
-    [ -f "$facts_md" ]    && grep -oE '^- \[[0-9]{4}-[0-9]{2}(-[0-9]{2})?\]' "$facts_md" 2>/dev/null | grep -oE '[0-9]{4}-[0-9]{2}(-[0-9]{2})?'
+    [ -f "$facts_jsonl" ] && extract_jsonl_dates "$facts_jsonl"
+    [ -f "$facts_md" ]    && extract_md_dates "$facts_md"
   } > /tmp/nwc_dates.$$ 2>/dev/null || true
   if [ -s /tmp/nwc_dates.$$ ]; then
     latest_fact_date=$(sort -r /tmp/nwc_dates.$$ | head -1)

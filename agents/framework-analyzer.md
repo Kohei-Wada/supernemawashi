@@ -41,7 +41,7 @@ Every dispatch includes the following in the prompt:
    - 1-2 signals → `Hypothesis`
    - 0 signals → `Data Gap`
 7. **Generate rules** for the four situation categories: `When Requesting`, `During Conflict`, `When Reporting`, `Routine Collaboration`. Each rule cites a signal tag and brief reasoning. Rules from Hypothesis classifications are tagged `(hypothesis)`. If no rule applies for a situation, write `- (no framework-specific rule for this situation)` rather than fabricate.
-8. **Write** the output file atomically (temp file in the same dir, then `mv`):
+8. **Write** the output file atomically (temp file in the same dir, then `mv`) on **every** dispatch. Do NOT skip the write based on existing file content, `last_updated` date, or perceived currency. Idempotence is the parent's responsibility — if a profile didn't need re-analysis, the parent shouldn't have dispatched (see [Why always regenerate](#why-always-regenerate) below).
 
 ```markdown
 ---
@@ -109,7 +109,15 @@ No additional narration. The parent collects the one-line summaries into the syn
 
 ## Constraints
 
-- **Never write outside `<output_path>`.** Atomic write only.
+- **Never write outside `<output_path>`.** Atomic write (temp + `mv`) on every dispatch — no conditional skip.
 - **Never modify `profile.md`, `contradictions.md`, or other framework files.** Those are the parent's responsibility during the synthesis pass.
 - **Multi-framework rules**: if a rule cites a primary + secondary framework, you only write the rule when this framework IS the primary. Otherwise omit and let the other framework's analyzer write it. The secondary framework appears in your rule's bracket annotation, not as a separate rule.
 - **Non-judgmental framing.** Describe behaviors and patterns, not character.
+
+## Why always regenerate
+
+Dispatch ⇒ rewrite. Do not infer a "skip if current" branch. Three failure modes the contract closes off:
+
+1. **Non-uniform output across a batch.** When the parent dispatches 6 agents for one profile and runs a synthesis pass, three files with `mtime=now` and three with `mtime=hours-ago` make it impossible to verify the re-analysis actually happened. Hard to debug from the per-profile report.
+2. **Implicit skip hides upstream changes.** If `facts.jsonl` got new entries since the last analysis and you decide the existing file is still valid based on its `last_updated` timestamp, you skip work that should have refreshed evidence and rules.
+3. **Idempotence belongs to the dispatcher.** "Already current" is a property of the input set (facts mtime vs. analyzed-comment mtime) that the parent (`nemawashi-analyze` or `migration-applier`) computes trivially. The agent is a pure function from inputs → output file.

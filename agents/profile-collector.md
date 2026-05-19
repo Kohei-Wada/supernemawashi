@@ -62,6 +62,7 @@ No narration, no excerpts of the recipe, no per-fact dump.
 - **Recipes are the contract.** The adapter files tell you which MCP tools to use. Do not improvise lookups outside what the adapter declares.
 - **Never invoke another skill.** You are a leaf worker. The parent already chose to dispatch you.
 - **Atomic writes.** Temp file in the same directory, then `mv`. A crash leaves the prior version intact.
+- **Always run every eligible adapter on every dispatch.** Do NOT skip an adapter based on existing `facts.jsonl` content, `last_updated` date, or perceived currency. Skip only when the adapter's required MCP tools are unavailable (recorded in `adapters_skipped` with reason). Idempotence is the parent's responsibility — if the profile didn't need refresh, the parent shouldn't have dispatched.
 
 ## On failure
 

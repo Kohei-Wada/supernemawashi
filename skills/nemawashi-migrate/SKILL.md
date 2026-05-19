@@ -14,7 +14,7 @@ Orchestrate format migrations for profile data in `PROFILE_DIR`. The plugin's on
 
 ## Architecture
 
-Each migration is a **pair of files** under `scripts/migrations/` (relative to the plugin root):
+Each migration is a **pair of files** in `./migrations/` (relative to this skill — i.e. `skills/nemawashi-migrate/migrations/`):
 
 - `<NN>-<name>.sh` — bash, `--detect` only. Lists eligible profiles. Cheap, deterministic, also called by the session-start hook.
 - `<NN>-<name>.md` — markdown apply instructions for the LLM. Describes the source format, target format, and per-profile transformation steps.
@@ -25,7 +25,7 @@ Adding a new migration is a drop-in of those two files. No registry edit, no edi
 
 ### Step 1: List available migrations
 
-Run `scripts/migrate-detect.sh` from the plugin root (the same script the session-start hook uses). It iterates `scripts/migrations/*.sh --detect` and prints one line per migration that has candidates:
+Run `./detect.sh` (relative to this skill — full path `skills/nemawashi-migrate/detect.sh`). The same script is wired into the session-start hook. It iterates `./migrations/*.sh --detect` and prints one line per migration that has candidates:
 
 ```
 01-facts-md-to-jsonl: 15 profile(s) eligible
@@ -57,7 +57,7 @@ Default to **dry-run / confirmation** — never apply without explicit user opt-
 
 For each migration the user opted into:
 
-1. **Read** the migration's `<id>.md` from `scripts/migrations/`. It contains the full apply contract — source format, target format, edge cases, verification.
+1. **Read** the migration's `<id>.md` from `./migrations/`. It contains the full apply contract — source format, target format, edge cases, verification.
 2. **Re-detect** the eligible profile list (the previous run may have changed state). Use the same `<id>.sh --detect` mechanism, or read the file system directly with the same eligibility rule documented in the markdown.
 3. For each eligible profile, follow the markdown's **Apply, per eligible profile** section exactly. The instructions tell you which file to read, what fields to extract, how to handle edge cases, and where to write the output. Do not improvise; the markdown is the contract.
 4. After each profile, follow the markdown's **Verify** section if present. Surface any discrepancies (skipped lines, count mismatches) in the per-profile report.
@@ -68,7 +68,7 @@ For each migration the user opted into:
 After applying all selected migrations:
 
 1. Print the aggregated report (one line per profile per migration).
-2. Re-run `scripts/migrate-detect.sh`. If there are still candidates, surface them — they may be migrations that became eligible only after the previous round (e.g. the framework-split migration depends on `facts.jsonl` existing).
+2. Re-run `./detect.sh`. If there are still candidates, surface them — they may be migrations that became eligible only after the previous round (e.g. `02-delete-legacy-facts-md` becomes eligible right after `01-facts-md-to-jsonl` completes, and the framework-split migration would depend on `facts.jsonl` existing).
 3. If everything is clean, confirm "All migrations applied. Profile set is current."
 
 ## Parallel application
@@ -97,6 +97,6 @@ This keeps wall-clock proportional to the slowest profile rather than the sum.
 ## Key Principles
 
 - **Detect cheap, apply smart.** Detection is bash so the session-start hook can run it without spinning up an LLM. Apply is LLM-driven so the parser is robust to the format drift that the legacy data accumulated.
-- **Self-discovering registry.** New migrations land as a `.sh` + `.md` pair under `scripts/migrations/`. The skill discovers them via the iterator, not via a hardcoded list.
+- **Self-discovering registry.** New migrations land as a `.sh` + `.md` pair under `./migrations/`. The skill discovers them via the iterator, not via a hardcoded list.
 - **The markdown is the contract.** When applying, follow `<id>.md` exactly. The skill orchestrates; the per-migration markdown specifies what to do.
 - **Dry-run by default.** Mutations require explicit user opt-in. The session-start nudge is a hint, never an automatic apply.

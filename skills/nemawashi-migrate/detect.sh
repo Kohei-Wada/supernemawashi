@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# migrate-detect.sh — Iterate scripts/migrations/*.sh in --detect mode.
+# detect.sh — Iterate this skill's migrations/*.sh in --detect mode.
 #
 # Aggregates the output of each migration's self-reported eligibility check.
 # Each migration prints exactly one line on stdout when it has work to do
@@ -8,9 +8,10 @@
 #
 # Used by:
 #   - hooks/session-start (to decide whether to surface a nudge)
-#   - skills/nemawashi-migrate (to list candidates before --apply)
+#   - skills/nemawashi-migrate (to list candidates before apply)
 #
-# Adding a new migration: drop a file in scripts/migrations/. No edit here.
+# Adding a new migration: drop a `.sh` + `.md` pair in `./migrations/`.
+# No edit to this iterator.
 
 set -uo pipefail
 

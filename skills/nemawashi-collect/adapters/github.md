@@ -67,6 +67,19 @@ The pre-check is intentionally inline (no cached marker) — 4-6 API calls per d
 4. Count interactions per login.
 5. Return a list of `{github_login, display_name, interaction_count}` records.
 
+## Identity Resolution
+Used by the identity cache (`.identity.md`) to record the user's own GitHub identifiers once per refresh cycle.
+
+1. Call `gh api user` (or equivalent MCP user-lookup) — returns `login`, `email`, `name`.
+2. Record `login` (= GitHub handle, used in `@me` queries and `--author` filters) and `email` (commit email, may differ from primary work email).
+
+Output (written to the `## github` section of `.identity.md`):
+
+```
+- login: <login>
+- email: <email>
+```
+
 ## Pitfalls
 - **Permissions**: only access repos the user has permission for. `gh` and the MCP enforce this.
 - **Sampling bias**: PRs from a single intense project will skew tone. Sample across repos when possible.

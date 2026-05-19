@@ -109,6 +109,48 @@ After collection, suggest:
 - "Profile created. Run nemawashi-analyze to identify behavioral patterns?"
 - If the profile already existed: summarize what was updated
 
+## Parallel Dispatch (Batch / multi-target Mode)
+
+When you need to collect for multiple targets at once — invoked by `nemawashi-discover` Step 5, or directly by the user as "collect for X, Y, Z in parallel" — do not run the per-adapter recipes inline N times. Dispatch the `profile-collector` agent (defined at `agents/profile-collector.md`) once per target. Each agent runs in an isolated context and writes only that target's profile files.
+
+The parent (this skill running in the main session) is responsible for:
+
+1. **Resolving identity once.** Read `${PROFILE_DIR}/.identity.md`. If it is missing or the user passed `--refresh-identity`, run each available adapter's `## Identity Resolution` section to produce it (see `IDENTITY-SCHEMA.md` for the cache contract and lifecycle). Write atomically.
+2. **Filtering adapters** by which MCP tools are available in this session.
+3. **Composing a uniform prompt** per target — see the prompt template below.
+4. **Dispatching N `profile-collector` agents in parallel** (one Agent tool invocation per target, all in a single message).
+5. **Aggregating** the one-line reports each agent returns. Surface failures and skipped adapters in the final summary.
+
+### profile-collector dispatch prompt template
+
+```
+target_name: <slug>
+target_full_name: <Full Name>
+target_role: <Role or "unknown">
+profile_dir: ${PROFILE_DIR}/<slug>/
+today: <YYYY-MM-DD>
+
+identity:
+- slack:    handle=<...>, user_id=<...>, email=<...>
+- gmail:    primary_email=<...>, work_email=<...>
+- calendar: primary_calendar_id=<...>, timezone=<...>
+- github:   login=<...>, email=<...>
+
+relationship_hint: <one-liner from the user, optional>
+
+Adapters available in this session: <comma-separated slugs>
+
+Read the adapter files at skills/nemawashi-collect/adapters/<slug>.md for the
+above slugs (plus ADAPTER-CONTRACT.md and FACTS-SCHEMA.md). Follow each
+adapter's Collection Recipe + Fact Extraction. Use the identity values
+above wherever a recipe says "the user's handle / email / login" — do NOT
+re-resolve identity.
+
+Return one report block per the agent's documented output shape.
+```
+
+Sub-agents called this way perform zero identity-resolution MCP calls and zero re-reads of skill-internal files outside the adapter set they actually use. Recipe drift is impossible because the agent reads the adapter files at the canonical path.
+
 ## Key Principles
 
 - **Collect, don't interpret** — This skill gathers raw data. Leave analysis to nemawashi-analyze.

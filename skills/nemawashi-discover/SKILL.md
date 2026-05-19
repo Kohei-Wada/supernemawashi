@@ -71,13 +71,18 @@ After the table, prompt:
 
 **If no untracked people found:** report that all frequent contacts have profiles. Suggest expanding the scan window or checking different channels.
 
-### Step 5: Collect
+### Step 5: Hand off to nemawashi-collect
 
-For each person the user selected:
+`nemawashi-discover` stops at "found unprofiled people, user picked some". Actually producing the profiles is `nemawashi-collect`'s job — and `nemawashi-collect` already owns the batch / parallel dispatch protocol (see its `## Parallel Dispatch` section). Keep the responsibilities separated.
 
-1. Invoke `nemawashi-collect` for that person.
-2. Report completion before moving to the next person.
-3. After all collections complete, summarize what was created.
+After the user has selected names:
+
+1. **Confirm** the handoff with the user: "Collect profiles for: alice, bob, carol — run `nemawashi-collect` now?" Treat selection alone as intent to proceed, but show the list so the user can adjust.
+2. **Invoke `nemawashi-collect`** with the selected names. The collect skill handles identity resolution (once), MCP filtering, and parallel `profile-collector` agent dispatch for the batch.
+3. **Summarize** whatever `nemawashi-collect` reports back; don't re-format or re-aggregate — that summary is already the collect skill's deliverable.
+4. **Suggest** `nemawashi-analyze` for the freshly collected profiles.
+
+Discover never reads `.identity.md`, never dispatches `profile-collector` directly, and never touches `PROFILE_DIR/<name>/`. Its writes are zero. Its job is finished once the list crosses the boundary into collect.
 
 ## Key Principles
 

@@ -44,6 +44,19 @@ Used by nemawashi-discover to find unprofiled people the user interacts with.
 3. Count meeting participation per attendee.
 4. Return a list of `{email, display_name, meeting_count, top_meeting_titles}` records.
 
+## Identity Resolution
+Used by the identity cache (`.identity.md`) to record the user's own Calendar identifiers once per refresh cycle.
+
+1. Call `list_calendars` and pick the calendar marked as `primary` (or the first writable owned calendar if no explicit primary flag exists).
+2. Record `id` (= `primary_calendar_id`) and `timeZone`.
+
+Output (written to the `## calendar` section of `.identity.md`):
+
+```
+- primary_calendar_id: <id>
+- timezone: <tz>
+```
+
 ## Pitfalls
 - **Calendar is structural, not behavioral**: it tells you who meets whom, not what they said. Pair with Slack/Gmail for substance.
 - **Free/busy noise**: declined or tentative invitations may not reflect real engagement.

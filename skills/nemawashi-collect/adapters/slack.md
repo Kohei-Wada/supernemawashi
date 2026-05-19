@@ -58,6 +58,22 @@ Used by nemawashi-discover to find unprofiled people the user interacts with.
 4. Count messages per person per channel; track which channels each person appears in.
 5. Return a list of `{handle, display_name, channels, msg_count}` records.
 
+## Identity Resolution
+Used by the identity cache (`.identity.md`) to record the user's own Slack identifiers once per refresh cycle.
+
+1. Determine the user's display name from the session context (e.g. CLI user, git config, or an explicit hint).
+2. Call `slack_search_users` (or equivalent user-lookup tool) with the display name to resolve the user's Slack `handle`, `user_id`, and `email`.
+3. Optionally call `slack_read_user_profile` against the resolved `user_id` to enrich with `display_name` and team.
+
+Output (written to the `## slack` section of `.identity.md`):
+
+```
+- handle: <handle>
+- user_id: <U…>
+- display_name: <name>
+- email: <email>
+```
+
 ## Pitfalls
 - **Bot accounts**: filter out app integrations and bot users (check message subtype / bot flags).
 - **Thread bias**: long threads over-represent vocal participants. Weight a single thread as one data point, not N.

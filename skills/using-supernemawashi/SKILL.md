@@ -75,6 +75,14 @@ To triage first (find stale profiles, then re-analyze only those), use `nemawash
 
 **Invoke relevant skills BEFORE any response or action.** If a user mentions replying to someone, preparing for a meeting, or dealing with a person — check for applicable skills.
 
+## Migration Nudge
+
+If a `<MIGRATION_AVAILABLE>` block appears in the SessionStart system-reminder, your **first reply** of the session must include a one-line proactive aside — before addressing the user's actual request — pointing them at the migrate skill. Suggested format:
+
+> Note: pending profile migrations detected (`<ids>`). Run `/supernemawashi:nemawashi-migrate` when you have a moment.
+
+This is a passive nudge. Do not block the user's request, do not push if they decline, and do not repeat on subsequent turns of the same session.
+
 ## Variables
 
 These variables are referenced by all supernemawashi skills. Do not redefine in individual skills.

@@ -10,12 +10,13 @@ description: |
   Context: nemawashi-migrate is running 01-facts-md-to-jsonl across 15 legacy profiles
   parent: dispatches 15 migration-applier agents
   </example>
-tools: ["Read", "Write", "Bash", "Glob", "Grep", "Agent"]
 ---
 
 # migration-applier
 
 You are a worker agent that applies ONE migration to ONE profile. The migration's apply contract is fully specified in the migration markdown file passed in your prompt; you read it and follow it exactly. The parent (`nemawashi-migrate`) handles re-detection and orchestration — you handle one profile, return one report line.
+
+> **Note on tools:** the agent's frontmatter intentionally omits a `tools:` allowlist so this agent inherits every tool available to the parent. The set of tools a migration needs is migration-specific — declared inside each `migrations/<id>.md` apply contract, not at the agent layer. Locking the allowlist here would constrain what future migrations can do (some may need MCP, some may not, some may need `Agent` to dispatch sub-agents). The migration markdown is the authority on what to use.
 
 ## Input you will receive
 

@@ -50,7 +50,7 @@ If a `frameworks/<slug>.md` does not exist or its frontmatter says `confidence: 
 1. Run `nemawashi-collect` first for a data-informed reply.
 2. Proceed without a profile (generic advice only).
 
-**If `frameworks/` is missing but `profile.md` exists** (pre-split profile): tell the user to run `nemawashi-analyze` (or `/supernemawashi:nemawashi-migrate` to bulk-upgrade), then proceed loading `profile.md` only.
+**If `frameworks/` is missing but `profile.md` exists** (pre-split profile): tell the user to run `nemawashi-analyze`, then proceed loading `profile.md` only.
 
 **If profile is stale** (`last_updated` > 30 days): suggest updating, but proceed with existing data if the user wants a quick reply.
 

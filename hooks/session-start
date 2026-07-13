@@ -19,19 +19,6 @@ escape_for_json() {
 using_skill_escaped=$(escape_for_json "$using_skill_content")
 session_context="<EXTREMELY_IMPORTANT>\nYou have supernemawashi.\n\n**Below is the full content of your 'supernemawashi:using-supernemawashi' skill - your introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n${using_skill_escaped}\n</EXTREMELY_IMPORTANT>"
 
-# Append a migration nudge if any profile data is eligible for a format
-# upgrade. The detect script iterates its sibling migrations/*.sh --detect
-# and prints one line per migration with candidates; if it stays silent,
-# the profile set is already current and no nudge is added.
-migrate_detect="${PLUGIN_ROOT}/skills/nemawashi-migrate/detect.sh"
-if [ -x "$migrate_detect" ]; then
-    migrate_output=$("$migrate_detect" 2>/dev/null || true)
-    if [ -n "$migrate_output" ]; then
-        migrate_escaped=$(escape_for_json "$migrate_output")
-        session_context="${session_context}\n\n<MIGRATION_AVAILABLE>\nPending profile-data migrations were detected. Before responding to the user's first request, surface this as a one-line proactive notice suggesting they run \`/supernemawashi:nemawashi-migrate\` when convenient. Do not block the user's request — mention and proceed.\n\n${migrate_escaped}\n</MIGRATION_AVAILABLE>"
-    fi
-fi
-
 if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
   printf '{\n  "additional_context": "%s"\n}\n' "$session_context"
 elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then

@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # lib/facts.sh — primitives for reading profile fact data.
 #
-# Sourced by `skills/nemawashi-check/check.sh` and (transitively, via
-# `skills/nemawashi-migrate/migrations/_runner.sh`) by every migration.
-# Not executable on its own.
+# Sourced by `skills/nemawashi-check/check.sh`. Not executable on its own.
 #
 # Helpers:
 #   - PROFILE_DIR              — env-overridable path to the profile dir

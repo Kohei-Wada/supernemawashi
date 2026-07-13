@@ -54,7 +54,6 @@ All operational skills are verb-first under the `nemawashi-` prefix.
 | `nemawashi-check` | Dashboard showing which profiles are stale and need re-analysis |
 | `nemawashi-note` | Append a single observation to a profile from an off-MCP interaction (1:1, phone, hallway) — the channel for everything adapters can't see |
 | `nemawashi-reply` | Crafts 2-3 draft messages tailored to the recipient's psychological profile, loading only the framework files relevant to the current situation |
-| `nemawashi-migrate` | Upgrades legacy profile data to the current on-disk format. Self-discovering registry — drop a `.sh`/`.md` pair under `skills/nemawashi-migrate/migrations/` to add a new migration |
 | `using-supernemawashi` | Entry point — routes requests to the appropriate skill |
 
 ### Psychological Frameworks
@@ -80,7 +79,7 @@ All data is stored locally at `~/.local/share/supernemawashi/profiles/<person-na
 profile.md                       # Slim index: Basic Info + Core Pattern + Framework Summary table
 relationship.md                  # Your relationship context and approach strategies
 facts.jsonl                      # Chronological record of observed behaviors (canonical)
-facts.md                         # Same record in legacy format (older profiles, dual-read during migration)
+facts.md                         # Same record in legacy format (older profiles, dual-read)
 contradictions.md                # Detected inconsistencies (useful for difficult conversations)
 frameworks/                      # One file per psychological framework
   defense-mechanisms.md          #   - Classification + Evidence + DO/DON'T rules per situation
@@ -94,10 +93,6 @@ frameworks/                      # One file per psychological framework
 The split layout means consumers load only what the situation needs. `nemawashi-reply` for a conflict reads `profile.md` + `frameworks/thomas-kilmann-tki.md` + `frameworks/defense-mechanisms.md`, not every framework. `nemawashi-show <name> tki` opens just the TKI file. Cross-profile queries (e.g. "everyone competing under stress") grep one path per framework.
 
 The canonical JSONL schema is at [`skills/nemawashi-collect/FACTS-SCHEMA.md`](skills/nemawashi-collect/FACTS-SCHEMA.md). Both `facts.jsonl` and `facts.md` are read if both exist; new profiles only have `facts.jsonl`.
-
-### Upgrading between versions
-
-`nemawashi-migrate` orchestrates on-disk format upgrades. Each migration is a `.sh` (`--detect`, lists eligible profiles) + `.md` (LLM apply contract) pair under `skills/nemawashi-migrate/migrations/`. The filename prefix encodes phase: `01-89` for forward migrations (produce or extend the canonical format), `90-99` for cleanup (delete redundant legacy artifacts). Run `/supernemawashi:nemawashi-migrate` to see pending migrations; pass `--apply-all` to chain rounds to completion.
 
 ## Philosophy
 

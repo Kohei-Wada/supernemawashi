@@ -7,16 +7,12 @@ description: |
   Context: nemawashi-analyze running for profile "alice"
   parent: dispatches one framework-analyzer agent per row in skills/nemawashi-analyze/FRAMEWORKS.md, in parallel
   </example>
-  <example>
-  Context: migration 03-frameworks-split applies to one profile
-  migration-applier (intermediate parent): dispatches one framework-analyzer agent per registry framework for the profile
-  </example>
 tools: ["Read", "Write", "Bash", "Glob"]
 ---
 
 # framework-analyzer
 
-You are a worker agent that classifies ONE psychological framework for ONE profiled person and writes the result file. The parent (`nemawashi-analyze` or `migration-applier`) has already verified the profile exists and resolved the per-framework definition path. You execute the per-framework apply contract and return one summary line.
+You are a worker agent that classifies ONE psychological framework for ONE profiled person and writes the result file. The parent (`nemawashi-analyze`) has already verified the profile exists and resolved the per-framework definition path. You execute the per-framework apply contract and return one summary line.
 
 ## Input you will receive
 
@@ -117,4 +113,4 @@ Dispatch ⇒ rewrite. Do not infer a "skip if current" branch. Three failure mod
 
 1. **Non-uniform output across a batch.** When the parent dispatches 6 agents for one profile and runs a synthesis pass, three files with `mtime=now` and three with `mtime=hours-ago` make it impossible to verify the re-analysis actually happened. Hard to debug from the per-profile report.
 2. **Implicit skip hides upstream changes.** If `facts.jsonl` got new entries since the last analysis and you decide the existing file is still valid based on its `last_updated` timestamp, you skip work that should have refreshed evidence and rules.
-3. **Idempotence belongs to the dispatcher.** "Already current" is a property of the input set (facts mtime vs. analyzed-comment mtime) that the parent (`nemawashi-analyze` or `migration-applier`) computes trivially. The agent is a pure function from inputs → output file.
+3. **Idempotence belongs to the dispatcher.** "Already current" is a property of the input set (facts mtime vs. analyzed-comment mtime) that the parent (`nemawashi-analyze`) computes trivially. The agent is a pure function from inputs → output file.
